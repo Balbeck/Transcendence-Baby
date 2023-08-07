@@ -1,7 +1,7 @@
 <script lang="ts">
 	//     ********* [ Imports ] *********
-	import Modal from "$lib/Modal.svelte";
-	import Profil from "$lib/Profile/Profile.svelte";
+	import Modal from "$lib/modals/Modal.svelte";
+	import Profil from "$lib/profile/Profile.svelte";
 	import Chat from "$lib/chat/Chat.svelte";
 	import Game from "$lib/game/Game.svelte";
 	import FindFriends from "../lib/findFriends/FindFriends.svelte";
@@ -40,6 +40,9 @@
 				{/if}
 			</Modal>
 		{/if}
+	</div>
+	<div>
+		<img src="/images/backgroundImg.jpg" alt="Ici DarK Cookie !" />
 	</div>
 </main>
 

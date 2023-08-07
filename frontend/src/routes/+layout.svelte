@@ -1,7 +1,7 @@
 <script lang="ts">
 	import "../app.css";
-	import Header from "$lib/Header.svelte";
-	import Login from "$lib/Login/Login.svelte";
+	import Navigation from "$lib/nav/Navigation.svelte";
+	import Login42 from "$lib/login/Login42.svelte";
 
 	import { onMount } from "svelte";
 	import { goto } from "$app/navigation";
@@ -115,11 +115,17 @@
 
 <div>
 	{#if !auth}
-		<Login />
+		<main>
+			<Login42 />
+		</main>
 	{:else}
-		<Header />
+		<header class="h-24 w-full bg-red-500">
+			<Navigation />
+		</header>
 		<div class="background">
-			<slot />
+			<main>
+				<slot />
+			</main>
 		</div>
 	{/if}
 </div>

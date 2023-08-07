@@ -6,7 +6,7 @@
 	import { openModal } from "$lib/store/ModalValues";
 
 	// Imports -[ Writable - Values ]-
-	import { authentificated } from "./store/store";
+	import { authentificated } from "../store/store";
 	function handleLoggout() {
 		localStorage.clear();
 		authentificated.set(false);
