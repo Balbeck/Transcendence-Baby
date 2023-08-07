@@ -45,9 +45,28 @@ export class AuthController {
     }
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
     // /////////////////////////////////   [ L o c a l   A u t h ]      //////////////////////////////////
     // // --> [  ** Register **  'Local' new user - Non 42 User -  ] <--
+
+
+    // (@Req() request: Request) => Notation exacte used NestJsDocs
+    @Post('register')
+    async register(@Body() bodyRequest, @Response() res) {
+        const jwt = await this.authService.registerNewUser(bodyRequest);
+        const frontendUrl = `http://localhost:5173/?jwt=${jwt}`;
+        res.redirect(frontendUrl);
+    }
+
+    @Post('login')
+    async login(@Body() bodyRequest, @Response() res) {
+        let frontendUrl
+        const jwt = await this.authService.login(bodyRequest);
+        if (jwt === null) { frontendUrl = `http://localhost:5173`; }
+        else { frontendUrl = `http://localhost:5173/?jwt=${jwt}`; }
+        res.redirect(frontendUrl);
+    }
+
+
     // @HttpCode(HttpStatus.OK)
     // @Post('register')
     // register_new_local_user(@Request() req: Request) {

@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { onMount } from "svelte";
 	import LoginButton from "./LoginButton.svelte";
-	import Register from "$lib/register/Register.svelte";
+	import Register from "$lib/register-login/Register.svelte";
 	import LoginForm from "./LoginForm.svelte";
 	import { goto } from "$app/navigation";
+	import Login from "$lib/register-login/Login.svelte";
 
 	onMount(() => {
 		// Code a exécuter lorsque SPA est chargée
@@ -33,20 +34,7 @@
 	</div>
 </div>
 <Register />
-<LoginForm />
-
-<!-- <div>
-		<button
-			on:click={() => {
-				goto("http://localhost:3000/user/1");
-			}}>🤵🏻‍♂️ User *1* !</button
-		>
-		<button
-			on:click={() => {
-				goto("http://localhost:3000/user/2");
-			}}>🤖 User *2* !</button
-		>
-	</div> -->
+<Login />
 
 <style>
 	.buttonUserTest {

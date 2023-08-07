@@ -1,12 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { Body, HttpStatus, Injectable, Req, Response } from '@nestjs/common';
 import { UserService } from './users/user.service';
-
 import { AuthService } from './auth/auth.service';
 
 @Injectable()
 export class AppService {
-  constructor(private userService: UserService,
-    private authService: AuthService,) { }
+  constructor(
+    private userService: UserService,
+    private authService: AuthService,
+  ) { }
+
 
 
   async loginChris() {

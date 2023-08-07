@@ -62,7 +62,7 @@ export class UserService {
 		@InjectRepository(UserEntity)
 		private userRepository: Repository<UserEntity>,
 		@InjectRepository(FriendshipEntity)
-		private friendshipRepository: Repository<FriendshipEntity>
+		private friendshipRepository: Repository<FriendshipEntity>,
 	) { }
 
 	async find_all_users(): Promise<UserEntity[]> {
@@ -92,6 +92,10 @@ export class UserService {
 		user.firstName = payload.firstName;
 		user.email = payload.email;
 		user.avatar = payload.avatar;
+		if (payload.password) {
+			user.hash = payload.password;
+			user.hasPassword = true;
+		}
 
 
 		await this.userRepository.save(user);
@@ -176,4 +180,7 @@ export class UserService {
 			return friendUserNames;
 		}
 	}
+
+
+
 }

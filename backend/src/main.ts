@@ -4,10 +4,12 @@ import { config } from 'dotenv';
 import * as express from 'express';
 config();
 import * as session from 'express-session';
+import * as bodyParser from 'body-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(express.json());
+  // app.use(bodyParser.json());
   app.enableCors({
     origin: true,
     methods: 'GET,POST,',

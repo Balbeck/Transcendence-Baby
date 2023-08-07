@@ -91,7 +91,7 @@ export class UserEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ unique: true })
+  @Column({})
   id42: number;
 
   @Column({ unique: true, default: "" })

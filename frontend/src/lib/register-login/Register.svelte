@@ -1,29 +1,72 @@
 <script lang="ts">
+	import { goto } from "$app/navigation";
+	import { authentificated } from "$lib/store/store";
+
 	let email: string = "";
 	let name: string = "";
 	let password: string = "";
 
-	function handleRegister() {}
+	const handleRegister = async () => {
+		const response = await fetch("http://localhost:3000/auth/register", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ email, name, password }),
+		});
+		console.log(
+			"jsonStringified(): ",
+			JSON.stringify({ email, name, password })
+		);
+		//const data = await response.json();
+		//console.log("data: ", data);
+
+		// Extraire le paramètre JWT de l'URL de la réponse
+		const jwtParam = new URLSearchParams(response.url.split("?")[1]).get(
+			"jwt"
+		);
+
+		console.log("JWT Paramètre: ", jwtParam);
+		if (jwtParam) {
+			localStorage.setItem("jwt", jwtParam);
+			authentificated.set(true);
+		}
+		goto("/");
+	};
 </script>
 
 <div class="form-container">
-	<form action="register">
+	<h2>Register Form</h2>
+	<form on:submit|preventDefault={handleRegister}>
 		<div>
 			<div class="input-form">
 				<span class="input-names">Email: </span>
-				<input class="input-field" type="text" name="email" value="" />
+				<input
+					class="input-field"
+					type="text"
+					name="email"
+					bind:value={email}
+				/>
 			</div>
 		</div>
 		<div class="input-form">
 			<span class="input-names">Name: </span>
-			<input class="input-field" type="text" name="name" value="" />
+			<input
+				class="input-field"
+				type="text"
+				name="name"
+				bind:value={name}
+			/>
 		</div>
 		<div class="input-form">
 			<span class="input-names">Pass: </span>
-			<input class="input-field" type="text" name="password" value="" />
+			<input
+				class="input-field"
+				type="text"
+				name="password"
+				bind:value={password}
+			/>
 		</div>
 		<div class="register-button">
-			<button on:click={handleRegister}>Register</button>
+			<button type="submit">Register</button>
 		</div>
 	</form>
 </div>

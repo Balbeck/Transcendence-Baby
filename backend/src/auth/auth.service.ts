@@ -1,5 +1,5 @@
 
-import { Injectable, Request, Param, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Request, Param, UnauthorizedException, } from '@nestjs/common';
 import { Url } from 'url';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
@@ -170,6 +170,70 @@ export class AuthService {
 
   // }
 
+  async registerNewUser(bodyRequest) {
+    console.log("BodyRequest: ", bodyRequest);
+    const email = bodyRequest.email;
+    const name = bodyRequest.name;
+    const password = bodyRequest.password;
 
+    if (!email || !name || !password) {
+      return null;
+    }
+    try {
+      const user = await this.userService.find_user_by_userName(name);
+      if (user) { return null; }
+      return this.addNewRegistredUser(email, name, password);
+    }
+    catch (e) {
+      return null;
+
+    }
+  }
+
+
+  async addNewRegistredUser(email: string, name: string, password: string) {
+    let payload = {
+      "id42": 0,
+      "login": name,
+      "userName": name,
+      "lastName": "",
+      "firstName": "",
+      "email": email,
+      "password": password,
+      "avatar": "default-Avatar.jpg"
+    }
+    console.log("[ Register ] -> payload: ", payload);
+    this.userService.add_new_user(payload);
+    // Create and return Jwt
+    let jwt_payload = {
+      id: payload.id42,
+      username: payload.login
+    }
+    console.log("Creation du Token avec payload pour *[ New Registrer User ]* ...");
+    return this.asign_jtw_token(jwt_payload);
+  }
+
+  async login(bodyRequest) {
+    const name = bodyRequest.name;
+    const password = bodyRequest.password;
+
+    if (!name || !password) {
+      return null;
+    }
+    try {
+      const user = await this.userService.find_user_by_userName(name);
+      if (!user || user.hash !== password) { return null; }
+      let jwt_payload = {
+        id: user.id42,
+        username: user.login
+      }
+      console.log("Creation du Token avec payload pour *[ LoGiN  User ]* ...");
+      return this.asign_jtw_token(jwt_payload);
+    }
+    catch (e) {
+      return null;
+
+    }
+  }
 
 }
