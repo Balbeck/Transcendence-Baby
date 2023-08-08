@@ -16,23 +16,16 @@ export class AuthService {
     private jwtService: JwtService,
   ) { }
 
-  // 'sub' option represent Id butnnamed sub according to Jwt Standards
+
+  // * - -[  J.W.T  ]- - *
   async asign_jtw_token(payload: any): Promise<any> {
-
-    // const access_token = this.jwtService.sign(payload);
-
-    // // Envoyez le JWT en tant que cookie dans la réponse
-    // res.setHeader('Set-Cookie', cookie.serialize('access_token', access_token, {
-    //   httpOnly: true,
-    //   sameSite: 'strict',
-    //   maxAge: 3600,
-    //   path: '/',
-    // }));
-
-    return this.jwtService.sign(payload);
+    return this.jwtService.signAsync(payload);
     //return { access_token: this.jwtService.sign(payload) };
   }
 
+
+
+  // * - -[  Authentification  { 42 } User  ]- - *
   async authentification_42(req: Request) {
 
     const url = new URL(req.url, 'http://localhost:5173');
@@ -170,6 +163,7 @@ export class AuthService {
 
   // }
 
+  // * - -[  Register New { User }  ]- - *
   async registerNewUser(bodyRequest) {
     console.log("BodyRequest: ", bodyRequest);
     const email = bodyRequest.email;
@@ -190,7 +184,7 @@ export class AuthService {
     }
   }
 
-
+  // * - -[  Add New { User } to DB and send a { JWT } ]- - *
   async addNewRegistredUser(email: string, name: string, password: string) {
     let payload = {
       "id42": 0,
@@ -213,16 +207,21 @@ export class AuthService {
     return this.asign_jtw_token(jwt_payload);
   }
 
+
+
+  // * - -[  Login { User }  ]- - *
   async login(bodyRequest) {
     const name = bodyRequest.name;
     const password = bodyRequest.password;
 
     if (!name || !password) {
-      return null;
+      throw new UnauthorizedException();
     }
     try {
       const user = await this.userService.find_user_by_userName(name);
-      if (!user || user.hash !== password) { return null; }
+      if (!user || user.hash !== password) {
+        throw new UnauthorizedException();
+      }
       let jwt_payload = {
         id: user.id42,
         username: user.login
@@ -231,8 +230,7 @@ export class AuthService {
       return this.asign_jtw_token(jwt_payload);
     }
     catch (e) {
-      return null;
-
+      throw new UnauthorizedException();
     }
   }
 

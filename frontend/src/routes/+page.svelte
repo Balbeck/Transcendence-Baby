@@ -26,7 +26,7 @@
 
 <main>
 	<div class="background-darkVador">
-		$: {#if show_Modal}
+		{#if show_Modal}
 			<Modal>
 				<!-- Display du Modal demande par le User -->
 				{#if selectedPage_Value === "profile"}

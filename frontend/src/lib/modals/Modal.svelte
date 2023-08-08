@@ -6,6 +6,9 @@
 <main>
 	<div class="modal-backdrop" on:click={() => closeModal()}>
 		<div class="modal-content" on:click={(e) => e.stopPropagation()}>
+			<button class="top-close-button" on:click={() => closeModal()}
+				>x</button
+			>
 			<slot />
 			<button class="close-button" on:click={() => closeModal()}
 				>x *** Close *** X</button
@@ -27,6 +30,9 @@
 	</div>
 </main> -->
 <style>
+	.top-close-button {
+		align-items: right;
+	}
 	/* Style pour le modal */
 	.modal-backdrop {
 		position: fixed;

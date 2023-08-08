@@ -17,7 +17,7 @@ export class AuthGuard implements CanActivate {
 	) { }
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
-		console.log("Bienvenue dans le canActivate du AuthGuard");
+		console.log("[ AuthGuard ] - Bienvenue dans le canActivate");
 		const request = context.switchToHttp().getRequest();
 		const token = this.extractTokenFromHeader(request);
 		if (!token) {
@@ -30,10 +30,16 @@ export class AuthGuard implements CanActivate {
 			console.log("[ AuthGuard ] - Token: ", token);
 			//const res = { data: (this.jwtService.decode(token)) };
 			const res = this.jwtService.decode(token) as { [key: string]: any };
-			console.log("res.username: ", res.username);
+			console.log("[ AuthGuard ] - res.username: ", res.username);
 			//if (!res.username) { throw new UnauthorizedException();}
 			let is_user_in_db = await this.userService.find_user_by_userName(res.username);
-			console.log("User is in Db");
+			if (is_user_in_db) {
+				console.log("[ AuthGuard ] - User is in Db: { ", is_user_in_db.login, " }");
+			}
+			else {
+				console.log("[ AuthGuard ] - User **NOT** in Db: { ", res.username, " }");
+				throw new UnauthorizedException;
+			}
 			//if (!is_user_in_db) {throw new UnauthorizedException();}
 			// let payload: any;
 			// payload = this.jwtService.decode(token);

@@ -24,7 +24,7 @@
 	<!-- <h1 class="42">4 2</h1> -->
 	<h2>Transcendence</h2>
 	<LoginButton />
-	<div>
+	<div class="testUsers">
 		<span class="buttonUserTest">
 			<button on:click={ConnectChchao}>User 1 🤵🏻‍♂️ </button>
 		</span>
@@ -33,10 +33,19 @@
 		</span>
 	</div>
 </div>
-<Register />
-<Login />
+<div class="login-register">
+	<Register />
+	<Login />
+</div>
 
 <style>
+	.testUsers {
+		flex-direction: row;
+		align-items: center;
+		margin-top: 3%;
+		margin-bottom: 3%;
+	}
+
 	.buttonUserTest {
 		margin-right: 10px;
 		border-radius: 12%;
@@ -47,12 +56,17 @@
 		max-width: 21%;
 	}
 
+	.login-register {
+		align-items: center;
+		flex-direction: row;
+		margin-top: 20px;
+	}
+
 	div {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		height: 100vh;
 	}
 
 	h1 {

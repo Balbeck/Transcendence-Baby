@@ -1,5 +1,5 @@
 
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Redirect, Request, Response, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Redirect, Request, Response, UnauthorizedException, UseGuards } from "@nestjs/common";
 import * as dotenv from 'dotenv';
 import { AuthService } from "./auth.service";
 import { AuthGuard } from './auth.guard';
@@ -16,14 +16,14 @@ export class AuthController {
 
     /////////////////////////////////   [ 4 2   A u t h ]        //////////////////////////////////
     // --> [ ** Etape 1 **   -> Rediriger le User vers l'Api de 42 afin d'avoir un GET 'code' ] <--
-    @Get('/42')
+    @Get('42')
     @HttpCode(302)
     @Redirect(`https://api.intra.42.fr/oauth/authorize?client_id=${api_uid}&redirect_uri=${redirect_uri}&response_type=code`)
     //@Redirect(`https://api.intra.42.fr/oauth/authorize?client_id=${api_uid}&redirect_uri=${code_uri}&response_type=code`)
     redirect() { }
 
     //--> [ ** Etape 2 **  -> Get le retour de 42Api pour extraire le 'code', verif Auth make requests a 42Api ] <--
-    @Get('/42api-return')
+    @Get('42api-return')
     async authentificate_42_User(@Request() req, @Response() res) {
         const jwt = await this.authService.authentification_42(req);
         console.log("le jwt Controller:", jwt);
@@ -50,6 +50,7 @@ export class AuthController {
 
 
     // (@Req() request: Request) => Notation exacte used NestJsDocs
+    @HttpCode(HttpStatus.OK)
     @Post('register')
     async register(@Body() bodyRequest, @Response() res) {
         const jwt = await this.authService.registerNewUser(bodyRequest);
@@ -57,9 +58,10 @@ export class AuthController {
         res.redirect(frontendUrl);
     }
 
+    @HttpCode(HttpStatus.OK)
     @Post('login')
     async login(@Body() bodyRequest, @Response() res) {
-        let frontendUrl
+        let frontendUrl: string;
         const jwt = await this.authService.login(bodyRequest);
         if (jwt === null) { frontendUrl = `http://localhost:5173`; }
         else { frontendUrl = `http://localhost:5173/?jwt=${jwt}`; }

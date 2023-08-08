@@ -67,6 +67,7 @@
 		border-width: 2px;
 		border-radius: 6px;
 		border-color: gray;
+		margin-left: 20px;
 		background-color: cornflowerblue;
 	}
 	.input-form {

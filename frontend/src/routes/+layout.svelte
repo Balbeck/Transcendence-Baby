@@ -43,6 +43,9 @@
 			if (token) {
 				console.log("On a bien un JWT present dans le localStorage !");
 				try {
+					// TEST   ( debut )
+					// TEST   ( fin )
+
 					// [ 1 - 1 ] Verification validite du Jwt aupres du Backend
 					const jwt_verifier_url =
 						"http://localhost:3000/auth/verifier_jwt";

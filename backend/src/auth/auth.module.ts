@@ -1,6 +1,5 @@
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { FriendshipEntity } from 'src/users/orm/friendship.entity';
@@ -13,23 +12,14 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from 'src/users/strategies/jwt.strategy';
 import { jwtSecret } from './jwtSecret';
 
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import 'dotenv/config';
 
 
 @Module({
   imports: [
-    // JwtModule.registerAsync({
-    //   imports: [ConfigModule],
-    //   inject: [ConfigService],
-    //   useFactory: async (configService: ConfigService) => ({
-    //     global: true,
-    //     secret: jwtConstants.secret,
-    //     //secret: process.env.JWT_SECRET,
-    //     signOptions: { expiresIn: '8h' },
-    //   }),
-    // }),
-
     JwtModule.register({
+      global: true,
       secret: jwtSecret.secret,
       signOptions: { expiresIn: '8h' },
     }),
@@ -44,9 +34,18 @@ import 'dotenv/config';
 })
 export class AuthModule { }
 
-// JwtModule.register({
-//   global: true,
-//   secret: jwtConstants.secret,
-//   signOptions: { expiresIn: '60s' },
-// }),
 
+
+
+
+// imports: [
+//   JwtModule.registerAsync({
+//     imports: [ConfigModule],
+//     inject: [ConfigService],
+//     useFactory: async (configService: ConfigService) => ({
+//       global: true,
+//       secret: jwtConstants.secret,
+//       //secret: process.env.JWT_SECRET,
+//       signOptions: { expiresIn: '8h' },
+//     }),
+//   }),
