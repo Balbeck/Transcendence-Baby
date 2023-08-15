@@ -29,9 +29,9 @@
 		{#if show_Modal}
 			<Modal>
 				<!-- Display du Modal demande par le User -->
-				{#if selectedPage_Value === "profile"}
-					<Profil on:closeModal={closeModal} />
-				{:else if selectedPage_Value === "chat"}
+				<!-- {#if selectedPage_Value === "profile"}
+					<Profil on:closeModal={closeModal} /> -->
+				{#if selectedPage_Value === "chat"}
 					<Chat on:closeModal={closeModal} />
 				{:else if selectedPage_Value === "game"}
 					<Game on:closeModal={closeModal} />

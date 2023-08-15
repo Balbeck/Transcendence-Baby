@@ -16,3 +16,4 @@ export function closeModal() {
 	showModal.set(false);
 	selectedPage.set("none");
 }
+

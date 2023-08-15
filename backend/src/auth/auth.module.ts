@@ -11,6 +11,10 @@ import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from 'src/users/strategies/jwt.strategy';
 import { jwtSecret } from './jwtSecret';
+import { AccessTokenStrategy } from './strategies/accessToken.strategy';
+import { RefreshTokenStrategy } from './strategies/refreshToken.strategy';
+
+
 
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import 'dotenv/config';
@@ -29,7 +33,7 @@ import 'dotenv/config';
   ],
 
   controllers: [AuthController],
-  providers: [AuthService, UserService, JwtStrategy],
+  providers: [AuthService, UserService, JwtStrategy, AccessTokenStrategy, RefreshTokenStrategy],
   exports: [UserService, HttpModule, UserModule, AuthService],
 })
 export class AuthModule { }

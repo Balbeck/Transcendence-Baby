@@ -11,4 +11,5 @@ export interface UserInterface {
 	hasPassword: boolean;
 	hash?: string;
 	LiveStatus: string;
+	refreshToken: string;
 }

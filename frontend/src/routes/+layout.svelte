@@ -2,38 +2,21 @@
 	import "../app.css";
 	import Navigation from "$lib/nav/Navigation.svelte";
 	import Login42 from "$lib/login/Login42.svelte";
+	import { openModal, showModal } from "$lib/store/ModalValues";
+	import checkJWT from "$lib/auth/auth.svelte";
 
 	import { onMount } from "svelte";
 	import { goto } from "$app/navigation";
-	import checkJWT from "$lib/auth/auth.svelte";
-
 	console.log("On arrive dans le Layout");
 
-	//  *- [ Authentification ] -* { Local Storage }  via  Header 🎩
-	// if (auth === false) {
-	// 	onMount(() => {
-	// 		const jwtHeader = response.headers.get("X-JWT");
+	import {
+		isGoogleAuthActivated,
+		qrGoogle,
+		userLogin,
+	} from "$lib/store/store";
 
-	// 		// Vérifiez si le JWT est présent dans l'en-tête de réponse
-	// 		if (document.cookie.startsWith("Authorization=Bearer ")) {
-	// 			// Récupérez le JWT en supprimant le préfixe 'Authorization' de l'en-tête de réponse
-	// 			const jwt = document.cookie.substring(
-	// 				"Authorization=Bearer ".length
-	// 			);
-	// 			console.log("JWT:", jwt);
-
-	// 			// Stockez le JWT dans le Local Storage
-	// 			localStorage.setItem("jwt", jwt);
-	// 			authentificated.set(true);
-	// 			console.log("Tudo Bem Muchacho");
-	// 		} else {
-	// 			console.log("Hey Non Encore Rate Caramba !!!! 😭 ");
-	// 		}
-	// 		return {
-	// 			redirect: "/",
-	// 		};
-	// 	});
-	// }
+	let login: any;
+	$: qrCode = "";
 
 	$: if (auth === false) {
 		//  *- [ Authentification ] -* { Local Storage }  via  URL
@@ -73,6 +56,7 @@
 						);
 						authentificated.set(false);
 						localStorage.clear();
+						goto("/");
 					}
 				} catch (error) {}
 			}
@@ -90,53 +74,107 @@
 					const jwtPromise = urlParams.get("jwt");
 					jwt = await jwtPromise;
 					console.log("JWT:", jwt);
-				}
 
-				// [ 2 - 3 ] Si param 'JwT' Stockez le JWT dans le Local Storage et Donner Acces a Espace User
-				if (jwt) {
-					console.log("jwt: ", jwt);
-					localStorage.setItem("jwt", jwt);
-					authentificated.set(true);
+					// [ 2 - 3 ] Si param 'JwT' Stockez le JWT dans le Local Storage et Donner Acces a Espace User
+					if (jwt) {
+						console.log("jwt: ", jwt);
+						localStorage.setItem("jwt", jwt);
+						authentificated.set(true);
+					}
+					// [ 2 - 4 ] Cas ou Jwt Non present dans l'Url
+					else {
+						console.log("Paramètre URL 'jwt' non trouvé.");
+					}
+					// [ 2 - 5 ] Redirection Vers Le Home afin de relancer Verification
+					goto("/");
 				}
-				// [ 2 - 4 ] Cas ou Jwt Non present dans l'Url
-				else {
-					console.log("Paramètre URL 'jwt' non trouvé.");
+				// Verification si presence PARAM -[ QRCode ]- dans URL pour Auth Google
+				// if (urlParams.has("qrcode")) {
+				// 	qrCode = urlParams.get("qrcode");
+				// 	login = await urlParams.get("login");
+				// 	// const loginPromise = urlParams.get("login");
+				// 	// login = await loginPromise;
+				// 	console.log("-[ Verif QR Layout ]-   login: ", login);
+				// 	console.log("-[ Verif QR Layout ]-   QrCode: ", qrCode);
+				// 	//set a modal value to on
+				// 	isGoogleAuthActivated.set(true);
+				// 	qrGoogle.set(qrCode);
+				// 	userLogin.set(login);
+				// 	goto("/");
+				// 	// la modal va afficher le QR et on submit du code POST Recupere le JWT
+				// }
+				if (urlParams.has("login")) {
+					const loginPromise = urlParams.get("login");
+					login = await loginPromise;
+					console.log("-[ Verif QR Layout ]-   login: ", login);
+					const response = await fetch(
+						`http://localhost:3000/auth/get_google_2fa/?login=${login}&qr=google`,
+						{
+							method: "GET",
+							headers: {
+								"Content-Type": "application/json",
+							},
+						}
+					);
+
+					if (response.ok) {
+						console.log("-[ Layout Get QR ]- OK");
+						let res = await response.json();
+						//console.log("-[ Enable 2fa ]-Response: ", res);
+						isGoogleAuthActivated.set(true);
+						// displayQr = true;
+						qrGoogle.set(res.url);
+						//console.log("-[ Enable 2fa]- qrSource: ", QrSource);
+					} else {
+						console.log("-[ Layout Get QR ]-  PROBLEME pas OK");
+					}
 				}
-				// [ 2 - 5 ] Redirection Vers Le Home afin de relancer Verification
-				goto("/");
 			}
 		});
 	}
 
 	// import -[ Value ]- Authentification : Condition Acces Espace User
 	import { authentificated } from "$lib/store/store";
+	import Modal from "$lib/modals/Modal.svelte";
+	import GoogleAuth from "$lib/auth/GoogleAuth.svelte";
+	import Login from "$lib/register-login/Login.svelte";
+
 	let auth: boolean = false;
 	authentificated.subscribe((a) => {
 		auth = a;
+	});
+
+	let ImgQrCode: string = "";
+	qrGoogle.subscribe((a) => {
+		ImgQrCode = a;
+	});
+
+	let googleActivated = false;
+	isGoogleAuthActivated.subscribe((a) => {
+		googleActivated = a;
 	});
 </script>
 
 <div>
 	{#if !auth}
 		<main>
-			<Login42 />
+			{#if googleActivated}
+				<Modal>
+					<GoogleAuth {login} QrCode={ImgQrCode} />
+				</Modal>
+			{:else}
+				<Login42 />
+			{/if}
 		</main>
 	{:else}
 		<header class="h-24 w-full bg-red-500">
 			<Navigation />
 		</header>
-		<div class="background">
-			<main>
-				<slot />
-			</main>
-		</div>
+		<!-- <div class="background"> -->
+		<slot />
+		<!-- </div> -->
 	{/if}
 </div>
 
 <style>
-	.background {
-		background-image: url("/images/backgroundImg.jpg");
-		background-repeat: no-repeat;
-		background-size: cover;
-	}
 </style>

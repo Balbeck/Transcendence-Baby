@@ -21,5 +21,10 @@
 		"typescript": "^5.0.0",
 		"vite": "^4.4.2"
 	},
-	"type": "module"
+	"type": "module",
+	"dependencies": {
+		"otplib": "^12.0.1",
+		"qrcode": "^1.5.3",
+		"qrcode-svg": "^1.1.0"
+	}
 }

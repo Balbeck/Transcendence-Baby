@@ -91,36 +91,42 @@ export class UserEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({})
-  id42: number;
-
-  @Column({ unique: true, default: "" })
+  // 3 Common infos to provide!
+  @Column({ unique: true })
   login: string;
-
-  @Column({ unique: true, default: "" })
+  @Column({ unique: true })
   userName: string;
-
-  @Column({ default: "" })
-  lastName: string;
-
-  @Column({ default: "" })
-  firstName: string;
-
-  @Column({ unique: true, default: "" })
+  @Column({ unique: true })
   email: string;
 
-  @Column({ default: "" })
-  avatar: string;
+  @Column({ nullable: true, default: null })
+  refreshToken: string;
 
-  @Column({ default: true })
-  is42: boolean;
+  // 2fa Google Authentificator
+  @Column({ default: false })
+  fa2: boolean;
+  @Column({ nullable: true, default: null })
+  fa2Secret: string;
+  @Column({ nullable: true, default: null })
+  fa2QRCode: string;
 
   // For Non-42 Users
   @Column({ default: false })
   hasPassword: boolean;
-
-  @Column({ default: "" })
+  @Column({ nullable: true, default: null })
   hash: string;
+  @Column({ default: "images/defaultAvatar.jpg" })
+  avatar: string;
+
+  // 42 Users
+  @Column({ default: false })
+  is42: boolean;
+  @Column({ nullable: true, default: null })
+  id42: number;
+  @Column({ nullable: true, default: null })
+  lastName: string;
+  @Column({ nullable: true, default: null, })
+  firstName: string;
 
   // 'online' 'offline' 'inGame'
   @Column({ default: "online" })

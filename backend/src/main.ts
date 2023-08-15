@@ -11,9 +11,10 @@ async function bootstrap() {
   app.use(express.json());
   // app.use(bodyParser.json());
   app.enableCors({
-    origin: true,
-    methods: 'GET,POST,',
+    origin: '*',
+    methods: 'GET,POST,PUT',
     credentials: true,
+    allowedHeaders: 'Content-Type,Authorization',
   });
   app.use(
     session({

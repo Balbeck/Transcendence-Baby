@@ -2,8 +2,37 @@
 	import { goto } from "$app/navigation";
 	import { onMount } from "svelte";
 
-	let username: string;
+	// Imports -[ MODALS ]- ///////////////////////////
+	import Modal from "$lib/modals/Modal.svelte";
+	import { openModal, selectedPage } from "$lib/store/ModalValues";
+	import { closeModal } from "$lib/store/ModalValues";
+	// Est ce que Display une Modal  -[ boolean ]-
+	import { showModal } from "$lib/store/ModalValues";
+	let show_Modal: boolean;
+	showModal.subscribe((a: boolean) => {
+		show_Modal = a;
+	});
+
+	let selectedModal: string;
+	selectedPage.subscribe((b: string) => {
+		selectedModal = b;
+	});
+	///////////////////////////////////////////////////
+
+	import { googleAuth } from "$lib/store/store";
+	let Google2fa: boolean = false;
+
+	import ImgPreviewProfile from "./ImgPreviewProfile.svelte";
+	import ErrorModal from "$lib/modals/ErrorModal.svelte";
+	import Enable2Fa from "./Enable2Fa.svelte";
+	import Disable2Fa from "./Disable2Fa.svelte";
+
+	let login: string;
 	let pictureLink: string;
+	let newUserName: string = "";
+	$: newImg = "";
+	$: username = "";
+
 	onMount(async () => {
 		try {
 			const jwt = localStorage.getItem("jwt");
@@ -22,35 +51,220 @@
 				);
 				console.log(" -[ Profile ]- response: ", response);
 				if (response.ok) {
+					//const user = await response.json(); // Convertit la réponse JSON en objet JavaScript
 					const user = await response.json(); // Convertit la réponse JSON en objet JavaScript
 					console.log(" -[ Profile ]- User: ", user);
-					username = user.userName;
+					console.log("Salut du Profile");
+					login = user.login;
 					pictureLink = user.avatar;
+					username = user.userName;
+
+					googleAuth.set(user.fa2);
+					console.log("2fa Value from user: [ ", user.fa2, " ]");
 				}
 				//let user = await response();
 			}
 		} catch (e) {}
+		googleAuth.subscribe((a) => {
+			Google2fa = a;
+		});
 	});
-	// src="images/backgroundImg.jpg"
+
+	async function handleChangeName() {
+		console.log("login ", login, "    newUserame: ", newUserName);
+		const jwt = localStorage.getItem("jwt");
+		const data = { login: login, newUsername: newUserName };
+
+		const response = await fetch("http://localhost:3000/auth/changeName", {
+			method: "POST",
+			headers: {
+				Authorization: `Bearer ${jwt}`,
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ data }),
+		});
+
+		if (response.ok) {
+			console.log("response.ok");
+			username = newUserName;
+			goto("/");
+		} else {
+			// show message erreur Modal
+			openModal("errorMsg");
+			goto("/Profile");
+		}
+	}
+
+	async function handleChangeImage() {
+		const jwt = localStorage.getItem("jwt");
+		const data = { login: login, img: newImg };
+		const response = await fetch("http://localhost:3000/auth/changeImage", {
+			method: "POST",
+			headers: {
+				Authorization: `Bearer ${jwt}`,
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ data }),
+		});
+
+		if (response.ok) {
+			console.log("-[ Change Image ]- New Image bien Set");
+		}
+		goto("/");
+	}
+
+	// async function Enable_2fa() {
+	// 	const jwt = localStorage.getItem("jwt");
+	// 	const data = { login: login, fa2: false };
+	// 	const response = await fetch("http://localhost:3000/auth/enable_2fa", {
+	// 		method: "POST",
+	// 		headers: {
+	// 			Authorization: `Bearer ${jwt}`,
+	// 			"Content-Type": "application/json",
+	// 		},
+	// 		body: JSON.stringify({ data }),
+	// 	});
+
+	// 	if (response.ok) {
+	// 		console.log("-[ Enable 2fa ]- OK");
+	// 	}
+	// 	goto("/");
+	// }
+
+	// async function Disable_2fa() {
+	// 	const jwt = localStorage.getItem("jwt");
+	// 	const data = { login: login, fa2: false };
+	// 	const response = await fetch("http://localhost:3000/auth/disable_2fa", {
+	// 		method: "POST",
+	// 		headers: {
+	// 			Authorization: `Bearer ${jwt}`,
+	// 			"Content-Type": "application/json",
+	// 		},
+	// 		body: JSON.stringify({ data }),
+	// 	});
+
+	// 	if (response.ok) {
+	// 		console.log("-[ Disable 2fa ]- OK ");
+	// 	}
+	// 	goto("/");
+	// }
 </script>
 
-<div class="profil-Page">
-	<h1>That is * {username} * Profil Bro !</h1>
-	<h3>You will get a Cookie if you are a Good Boy</h3>
+{#if show_Modal}
 	<div>
-		<img src={pictureLink} alt="Images d'illustration : 🤖 👨🏻‍🌾 🍪 🤣" />
+		<Modal>
+			{#if selectedModal === "Try Avatar"}
+				<ImgPreviewProfile
+					image={newImg}
+					{login}
+					{username}
+					on:closeModal={closeModal}
+				/>
+			{/if}
+			{#if selectedModal === "errorMsg"}
+				<ErrorModal msg="username [ {username} ] is already used !" />
+			{/if}
+			{#if selectedModal === "Try Enable 2fa"}
+				<Enable2Fa {login} />
+			{/if}
+			{#if selectedModal === "Try Disable 2fa"}
+				<Disable2Fa {login} />
+			{/if}
+		</Modal>
 	</div>
-</div>
+{:else}
+	<div class="profile-Page">
+		<h1>That is * {username} * Profil Bro !</h1>
+		<h3>You will get a Cookie if you are a Good Boy</h3>
+		<div>
+			<img class="profile-pic" src={pictureLink} alt=": 🤖 👨🏻‍🌾 🍪 🤣 :" />
+		</div>
+		<div>
+			<p>Login : {login}</p>
+			<p>Name : {username}</p>
+			<p>
+				Change username
+				<input type="text" bind:value={newUserName} />
+				<button on:click={handleChangeName}>Change</button>
+			</p>
+			<p>
+				Change Avatar (.jpg only !)
+				<input type="text" bind:value={newImg} />
+				<button on:click={handleChangeImage}>Change</button>
+				<button
+					on:click={() => {
+						openModal("Try Avatar");
+						goto("/Profile");
+					}}
+				>
+					Try
+				</button>
+			</p>
+			<div>You could try : images/defaultAvatar.jpg</div>
+			<div>You could try : images/backgroundImg.jpg</div>
+			<div>
+				<span> Google Authentificator : </span>
+				{#if Google2fa === true}
+					<span>
+						<!-- <button on:click={Disable_2fa}>Disable</button> -->
+						<button
+							on:click={() => {
+								openModal("Try Disable 2fa");
+								goto("/Profile");
+							}}
+						>
+							Disable
+						</button>
+					</span>
+				{:else}
+					<span>
+						<!-- <button on:click={Enable_2fa}>Enable</button> -->
+						<button
+							on:click={() => {
+								openModal("Try Enable 2fa");
+								goto("/Profile");
+							}}
+						>
+							Enable
+						</button>
+					</span>
+				{/if}
+			</div>
+		</div>
+	</div>
+{/if}
 
 <style>
+	input {
+		border-color: black;
+		border-width: 1px;
+	}
+	button {
+		color: red;
+		border-width: 1px;
+		border-radius: 25%;
+		border-color: red;
+		margin-left: 2px;
+		margin-right: 2px;
+	}
 	.profile-Page {
 		/* height: 2500px;
 		width: 2500px; */
 		align-items: center;
 	}
+	.profile-pic {
+		max-width: 20%;
+		max-height: 20%;
+		border-radius: 50%;
+	}
 	img {
 		align-items: center;
 		position: relative;
+		border-color: black;
+		border-width: 2px;
+	}
+	p {
+		margin-top: 2px;
 	}
 	h1 {
 		align-items: center;

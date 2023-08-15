@@ -19,9 +19,7 @@ export class AppController {
   //   const jwt = await this.authService.authentification_42(req);
   //   console.log("le jwt Controller:", jwt);
 
-  //   // // redirection vers le front avec le Jwt dans le Header
-  //   // res.setHeader('Authorization', `Bearer ${jwt}`);
-  //   // res.redirect('http://localhost:5173');
+
 
   //   // redirection vers le front avec le Jwt en Url
   //   const frontendUrl = `http://localhost:5173/?jwt=${jwt}`;

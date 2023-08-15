@@ -1,4 +1,4 @@
-import { Controller, Body, Get, Header, HttpCode, HttpStatus, Request, Response, UseGuards, UnauthorizedException } from '@nestjs/common';
+import { Controller, Body, Get, Header, HttpCode, HttpStatus, Request, Response, UseGuards, UnauthorizedException, Put, Delete, Param, Patch, Post } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserEntity } from './orm/user.entity';
 import { AuthGuard } from '@nestjs/passport';
@@ -13,32 +13,60 @@ export class UserController {
 
 
 
+	// @Post()
+	// create(@Body() createUserDto: CreateUserDto) {
+	// 	return this.userService.create(createUserDto);
+	// }
+
+	// @Get()
+	// findAll() {
+	//   return this.userService.findAll();
+	// }
+
+	// @Get(':id')
+	// findById(@Param('id') id: string) {
+	//   return this.userService.findById(id);
+	// }
+
+	// @Patch(':id')
+	// update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+	//   return this.userService.update(id, updateUserDto);
+	// }
+
+	// @Delete(':id')
+	// remove(@Param('id') id: string) {
+	// 	return this.userService.remove(id);
+	// }
+
+
+
+
+
+
+
+
 	//  *-[ Test without - Frontend - ]-*
-	@HttpCode(HttpStatus.OK)
-	@Get('changeName')
-	changeUserName() {
-		//this.userService.change_userName('balbecke', 'totoTATA');
-		this.userService.change_userName('totoTATA', 'balbecke');
-	}
+
+
 
 	@HttpCode(HttpStatus.OK)
 	//@UseGuards(AuthGuard)
 	@Get('profile')
 	async profile(@Request() req, @Response() res) {
 		try {
-			console.log(" -[ Profile ]- ");
+			console.log(" -[ Profile UserCtrl ]- ");
 			const headers = req.headers;
 			const Token = req.headers.authorization;
 			const [, jwtToken] = Token.split(' '); // Divise la chaîne en fonction de l'espace et ignore la première partie (Bearer)
-			console.log(" -[ Profile ]- jwtToken: ", jwtToken);
+			console.log(" -[ Profile UserCtrl ]- jwtToken: ", jwtToken);
 			const jwt = this.jwtService.decode(jwtToken) as { [key: string]: any };
-			console.log(" -[ Profile ]- decode jwt: ", jwt);
-			console.log(" -[ Profile ]- jwt username: ", jwt.username);
-			const user = await this.userService.find_user_by_userName(jwt.username);
+			console.log(" -[ Profile UserCtrl ]- decode jwt: ", jwt);
+			console.log(" -[ Profile UserCtrl ]- jwt id: ", jwt.id);
+			const user = await this.userService.find_user_by_id(jwt.id);
 			res.json(user);
 		}
 		catch (e) {
-			console.log("-->  -{ Catch }-  -  [ Profile ]");
+			console.log("-->  -{ Catch }-  -  [ Profile UserCtrl ] (e): ", e);
 			throw new UnauthorizedException;
 		}
 	}

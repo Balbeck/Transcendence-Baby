@@ -6,19 +6,59 @@
 	import { openModal } from "$lib/store/ModalValues";
 
 	// Imports -[ Writable - Values ]-
-	import { authentificated } from "../store/store";
-	function handleLoggout() {
+	import {
+		authentificated,
+		isGoogleAuthActivated,
+		isGoogleAuthEnabled,
+	} from "../store/store";
+
+	async function handleLoggout() {
+		const token = localStorage.getItem("jwt");
+		if (token) {
+			const logout_url = "http://localhost:3000/auth/logout";
+			const response = await fetch(logout_url, {
+				method: "POST",
+				headers: {
+					Authorization: `Bearer ${token}`,
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({}),
+			});
+		}
 		localStorage.clear();
+		isGoogleAuthEnabled.set(false);
 		authentificated.set(false);
+		//isGoogleAuthActivated.set(false);
 		goto("/");
+	}
+
+	function handleProfile() {
+		goto("Profile");
 	}
 </script>
 
 <nav class="w-full flex gap-10 p-2 justify-center items-center h-full">
-	<button on:click={() => openModal("profile")}>Profile</button>
-	<button on:click={() => openModal("game")}>Jeu</button>
-	<button on:click={() => openModal("chat")}>Chat</button>
-	<button on:click={() => openModal("findFriends")}>Find Friends</button>
+	<!-- <button on:click={() => openModal("profile")}>Profile</button> -->
+	<button on:click={() => goto("/")}>Home</button>
+	<button on:click={handleProfile}>Profile</button>
+	<button
+		on:click={() => {
+			goto("/");
+			openModal("game");
+		}}>Jeu</button
+	>
+	<button
+		on:click={() => {
+			goto("/");
+			openModal("chat");
+		}}>Chat</button
+	>
+	<button
+		on:click={() => {
+			goto("/");
+			openModal("findFriends");
+		}}>Find Friends</button
+	>
 	<button on:click={handleLoggout}>Logout</button>
 </nav>
 

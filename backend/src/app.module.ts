@@ -7,6 +7,7 @@ import { AppController } from './app.controller';
 import { UserModule } from './users/user.module';
 import { AuthModule } from './auth/auth.module';
 
+
 import * as dotenv from 'dotenv';
 dotenv.config();
 
@@ -48,3 +49,22 @@ dotenv.config();
 })
 export class AppModule { }
 
+// // CORS PB :
+// import { Module } from '@nestjs/common';
+// import { CorsModule } from '@nestjs/cors';
+// import { AppController } from './app.controller';
+// import { AppService } from './app.service';
+
+// @Module({
+//   imports: [
+//     // Autres modules importés
+//     CorsModule.forRoot({
+//       origin: '*', // Remplace * par l'URL spécifique de ton frontend en production
+//       methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+//       allowedHeaders: 'Content-Type,Authorization', // Ajoute 'Authorization' ici
+//     }),
+//   ],
+//   controllers: [AppController],
+//   providers: [AppService],
+// })
+// export class AppModule {}

@@ -6,13 +6,13 @@
 <main>
 	<div class="modal-backdrop" on:click={() => closeModal()}>
 		<div class="modal-content" on:click={(e) => e.stopPropagation()}>
-			<button class="top-close-button" on:click={() => closeModal()}
+			<!-- <button class="top-close-button" on:click={() => closeModal()}
 				>x</button
-			>
+			> -->
 			<slot />
-			<button class="close-button" on:click={() => closeModal()}
+			<!-- <button class="close-button" on:click={() => closeModal()}
 				>x *** Close *** X</button
-			>
+			> -->
 		</div>
 	</div>
 </main>
