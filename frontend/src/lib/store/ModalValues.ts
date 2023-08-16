@@ -17,3 +17,5 @@ export function closeModal() {
 	selectedPage.set("none");
 }
 
+export let errorMsg = writable("");
+

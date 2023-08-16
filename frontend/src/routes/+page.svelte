@@ -7,7 +7,7 @@
 	import FindFriends from "../lib/findFriends/FindFriends.svelte";
 
 	// Imports  -[ Functions ]-
-	import { closeModal } from "$lib/store/ModalValues";
+	import { closeModal, errorMsg } from "$lib/store/ModalValues";
 
 	// Est ce que Display une Modal  -[ boolean ]-
 	import { showModal } from "$lib/store/ModalValues";
@@ -18,9 +18,14 @@
 
 	// Nom de la Modal a display  -[ string ]-
 	import { selectedPage } from "$lib/store/ModalValues";
+	import ErrorModal from "$lib/modals/ErrorModal.svelte";
 	let selectedPage_Value: string;
 	selectedPage.subscribe((a: string) => {
 		selectedPage_Value = a;
+	});
+	let msgError = "";
+	errorMsg.subscribe((a) => {
+		msgError = a;
 	});
 </script>
 
@@ -37,6 +42,8 @@
 					<Game on:closeModal={closeModal} />
 				{:else if selectedPage_Value === "findFriends"}
 					<FindFriends on:closeModal={closeModal} />
+				{:else if selectedPage_Value === "errorMsg"}
+					<ErrorModal msg={msgError} on:closeModal={closeModal} />
 				{/if}
 			</Modal>
 		{/if}

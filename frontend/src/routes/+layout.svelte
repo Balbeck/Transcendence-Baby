@@ -2,7 +2,7 @@
 	import "../app.css";
 	import Navigation from "$lib/nav/Navigation.svelte";
 	import Login42 from "$lib/login/Login42.svelte";
-	import { openModal, showModal } from "$lib/store/ModalValues";
+	import { errorMsg, openModal, showModal } from "$lib/store/ModalValues";
 	import checkJWT from "$lib/auth/auth.svelte";
 
 	import { onMount } from "svelte";

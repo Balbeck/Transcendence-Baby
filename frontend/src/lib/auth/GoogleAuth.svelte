@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
-	import { closeModal } from "$lib/store/ModalValues";
+	import { closeModal, openModal, errorMsg } from "$lib/store/ModalValues";
 	import {
 		authentificated,
 		googleAuth,
@@ -12,7 +12,7 @@
 	export let QrCode: string;
 	export let login: string;
 	$: codeVerif = "";
-	let errorMsg: string = "";
+	let indication: string = "";
 	let verif: boolean = false;
 	async function handleVerifyCode() {
 		const response = await fetch(
@@ -42,7 +42,10 @@
 			} else {
 				console.log("Google Auth Paramètre 'jwt' { NULL }.");
 				isGoogleAuthActivated.set(false);
+				openModal("errorMsg");
+				goto("/");
 				verif = false;
+				errorMsg.set("Google Auth Code Incorect !");
 			}
 		}
 		// closeModal();
@@ -70,11 +73,11 @@
 		<button
 			on:click={async () => {
 				if (!codeVerif.length) {
-					errorMsg = "Cannot be empty";
+					indication = "Cannot be empty";
 				} else if (!/^\d+$/.test(codeVerif)) {
-					errorMsg = "Only digits plz";
+					indication = "Only digits plz";
 				} else if (codeVerif.length != 6) {
-					errorMsg = "Only 6 digits plz";
+					indication = "Only 6 digits plz";
 				} else {
 					handleVerifyCode();
 					closeModal();
@@ -83,7 +86,7 @@
 			}}>Verify Code</button
 		>
 	</div>
-	<div>{errorMsg}</div>
+	<div>{indication}</div>
 </div>
 
 <style>
