@@ -145,7 +145,7 @@ export class AuthController {
     @HttpCode(HttpStatus.OK)
     @Get('enable_2fa')
     async preview2fa(@Request() req, @Response() res) {
-        let login;
+        let login: string;
         const token = req.headers.authorization;
         if (token) {
             const jwt = token.replace('Bearer', '').trim();
@@ -231,7 +231,7 @@ export class AuthController {
         const login = req.body.data.login;
         const user = await this.userService.find_user_by_login(login);
         console.log("-[ Img ]-  old Avatar: ", user.avatar);
-        if (!user || !img || img === "" || img.length < 5) {
+        if (!user || !img || img === "" || img.length < 5 || img.length > 500) {
             console.log("-[ IMG change ]- { ERROR }");
             throw new UnauthorizedException();
         }
@@ -248,7 +248,7 @@ export class AuthController {
         if (token) {
             const jwt = token.replace('Bearer', '').trim();
             const decoded = this.jwtService.decode(jwt) as { [key: string]: any };
-            console.log('New Jwt encode: ', decoded);
+            //  console.log('New Jwt encode: ', decoded);
 
 
             if (decoded && decoded.login) {

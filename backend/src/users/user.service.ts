@@ -91,7 +91,7 @@ export class UserService {
 		// Genere QRCode
 		const user = await this.find_user_by_login(login);
 		const email = user.email;
-		const otpauthUrl = otplib.authenticator.keyuri(email, 'Pong_Transcendence', secret);
+		const otpauthUrl = otplib.authenticator.keyuri(email, 'PacPac-Pong_Transcendence', secret);
 		const url = await qrcode.toDataURL(otpauthUrl)
 		//console.log("-[Usr Enable 2Fa]- code:  ", url);
 
@@ -116,13 +116,20 @@ export class UserService {
 		await this.userRepository.update({ login }, { fa2: true });
 	}
 
+	async clear2fa(login: string) {
+		await this.userRepository.update({ login }, { fa2Secret: null });
+		await this.userRepository.update({ login }, { fa2QRCode: null });
+	}
+
 	async get_QRCode(login: string) {
 		const user = await this.find_user_by_login(login);
-		const email = user.email;
-		const secret = otplib.authenticator.generateSecret();
-		const otpauthUrl = otplib.authenticator.keyuri(email, 'Pong_Transcendence', secret);
-		const url = await qrcode.toDataURL(otpauthUrl);
-		await this.userRepository.update({ login }, { fa2Secret: secret });
+
+		const url = user.fa2QRCode;
+		// const email = user.email;
+		// const secret = otplib.authenticator.generateSecret();
+		// const otpauthUrl = otplib.authenticator.keyuri(email, 'Pong_Transcendence', secret);
+		// const url = await qrcode.toDataURL(otpauthUrl);
+		// await this.userRepository.update({ login }, { fa2Secret: secret });
 		//console.log("-[ Usr Ser ]- {Get QR Code} url:  ", url)
 		return url;
 	}

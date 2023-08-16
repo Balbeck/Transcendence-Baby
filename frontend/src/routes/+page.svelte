@@ -1,7 +1,7 @@
 <script lang="ts">
 	//     ********* [ Imports ] *********
 	import Modal from "$lib/modals/Modal.svelte";
-	import Profil from "$lib/profile/Profile.svelte";
+	import Profilpage from "$lib/profile/Profilepage.svelte";
 	import Chat from "$lib/chat/Chat.svelte";
 	import Game from "$lib/game/Game.svelte";
 	import FindFriends from "../lib/findFriends/FindFriends.svelte";
@@ -30,7 +30,7 @@
 			<Modal>
 				<!-- Display du Modal demande par le User -->
 				<!-- {#if selectedPage_Value === "profile"}
-					<Profil on:closeModal={closeModal} /> -->
+					<Profilpage on:closeModal={closeModal} /> -->
 				{#if selectedPage_Value === "chat"}
 					<Chat on:closeModal={closeModal} />
 				{:else if selectedPage_Value === "game"}

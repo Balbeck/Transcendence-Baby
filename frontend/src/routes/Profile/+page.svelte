@@ -1,10 +1,10 @@
 <script lang="ts">
-	import Profile from "$lib/profile/Profile.svelte";
+	import Profilepage from "$lib/profile/Profilepage.svelte";
 </script>
 
 <main>
 	<div class="Profil-Layout">
-		<Profile />
+		<Profilepage />
 	</div>
 </main>
 
