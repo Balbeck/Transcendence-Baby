@@ -258,7 +258,7 @@ export class AuthController {
                 this.authService.logout(login);
                 console.log('-[ Logout ]- Updated Logout User: ', await this.userService.find_user_by_login(login))
             }
-            res.redirect('${frontUrl}');
+            res.redirect('http://localhost:5173');
         }
     }
     // /////////////////////////////////////////////////////////////////////////////////////////////////////
