@@ -47,8 +47,8 @@
 </script>
 
 {#if show_Modal}
-	<div>Enabling Google Authentificator</div>
-	<div>You Have to auth Yourself to enable 2fa</div>
+	<div>Enabling Google Authenticator</div>
+	<div>Authenticate Yourself to enable 2fa</div>
 
 	<GoogleAuth QrCode={QrSource} {login} />
 {/if}

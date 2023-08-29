@@ -11,44 +11,6 @@ export class UserController {
 		private jwtService: JwtService,
 	) { }
 
-
-
-	// @Post()
-	// create(@Body() createUserDto: CreateUserDto) {
-	// 	return this.userService.create(createUserDto);
-	// }
-
-	// @Get()
-	// findAll() {
-	//   return this.userService.findAll();
-	// }
-
-	// @Get(':id')
-	// findById(@Param('id') id: string) {
-	//   return this.userService.findById(id);
-	// }
-
-	// @Patch(':id')
-	// update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-	//   return this.userService.update(id, updateUserDto);
-	// }
-
-	// @Delete(':id')
-	// remove(@Param('id') id: string) {
-	// 	return this.userService.remove(id);
-	// }
-
-
-
-
-
-
-
-
-	//  *-[ Test without - Frontend - ]-*
-
-
-
 	@HttpCode(HttpStatus.OK)
 	//@UseGuards(AuthGuard)
 	@Get('profile')
@@ -70,6 +32,10 @@ export class UserController {
 			throw new UnauthorizedException;
 		}
 	}
+
+
+
+
 
 	@HttpCode(HttpStatus.OK)
 	@Get('/all')

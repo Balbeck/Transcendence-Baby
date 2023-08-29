@@ -18,7 +18,27 @@
 	let login: any;
 	$: qrCode = "";
 
-	$: if (auth === false) {
+	// import -[ Value ]- Authentification : Condition Acces Espace User
+	import { authentificated } from "$lib/store/store";
+	import Modal from "$lib/modals/Modal.svelte";
+	import GoogleAuth from "$lib/auth/GoogleAuth.svelte";
+
+	let auth: boolean = false;
+	authentificated.subscribe((a) => {
+		auth = a;
+	});
+
+	let ImgQrCode: string = "";
+	qrGoogle.subscribe((a) => {
+		ImgQrCode = a;
+	});
+
+	let googleActivated = false;
+	isGoogleAuthActivated.subscribe((a) => {
+		googleActivated = a;
+	});
+
+	if (auth === false) {
 		//  *- [ Authentification ] -* { Local Storage }  via  URL
 		onMount(async () => {
 			// [ 1 ] Check si un Jwt est deja present Dans le LocalStorage du Browser
@@ -132,27 +152,6 @@
 			}
 		});
 	}
-
-	// import -[ Value ]- Authentification : Condition Acces Espace User
-	import { authentificated } from "$lib/store/store";
-	import Modal from "$lib/modals/Modal.svelte";
-	import GoogleAuth from "$lib/auth/GoogleAuth.svelte";
-	import Login from "$lib/register-login/Login.svelte";
-
-	let auth: boolean = false;
-	authentificated.subscribe((a) => {
-		auth = a;
-	});
-
-	let ImgQrCode: string = "";
-	qrGoogle.subscribe((a) => {
-		ImgQrCode = a;
-	});
-
-	let googleActivated = false;
-	isGoogleAuthActivated.subscribe((a) => {
-		googleActivated = a;
-	});
 </script>
 
 <div>
@@ -170,9 +169,7 @@
 		<header class="h-24 w-full bg-red-500">
 			<Navigation />
 		</header>
-		<!-- <div class="background"> -->
 		<slot />
-		<!-- </div> -->
 	{/if}
 </div>
 

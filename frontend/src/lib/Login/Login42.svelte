@@ -1,10 +1,7 @@
 <script lang="ts">
 	import { onMount } from "svelte";
 	import LoginButton from "./LoginButton.svelte";
-	import Register from "$lib/register-login/Register.svelte";
-	import LoginForm from "./LoginForm.svelte";
 	import { goto } from "$app/navigation";
-	import Login from "$lib/register-login/Login.svelte";
 
 	onMount(() => {
 		// Code a exécuter lorsque SPA est chargée
@@ -33,10 +30,6 @@
 		</span>
 	</div>
 </div>
-<div class="login-register">
-	<Register />
-	<Login />
-</div>
 
 <style>
 	.testUsers {
@@ -54,12 +47,6 @@
 	}
 	img {
 		max-width: 21%;
-	}
-
-	.login-register {
-		align-items: center;
-		flex-direction: row;
-		margin-top: 20px;
 	}
 
 	div {

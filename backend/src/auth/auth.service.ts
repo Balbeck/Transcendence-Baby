@@ -1,18 +1,15 @@
 
-import { Injectable, Request, Param, UnauthorizedException, BadRequestException, } from '@nestjs/common';
-import { Url } from 'url';
+import { Injectable, UnauthorizedException, BadRequestException, } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
 import { UserService } from 'src/users/user.service';
-import { UserEntity } from 'src/users/orm/user.entity';
 import { JwtService } from '@nestjs/jwt';
-import { Response } from 'express';
 import * as argon2 from 'argon2';
 import { ConfigService } from '@nestjs/config';
-import { QueryFailedError } from 'typeorm';
 import * as otplib from 'otplib';
 import { toDataURL } from 'qrcode';
-import * as qrcode from 'qrcode';
+
+
 
 @Injectable()
 export class AuthService {
@@ -20,15 +17,15 @@ export class AuthService {
     private httpService: HttpService,
     private userService: UserService,
     private jwtService: JwtService,
+    private configService: ConfigService,
   ) { }
+
 
   // * - - - [  Authentification  { 42 } User  ] - - - *
   async authentification_42(req: Request) {
 
-    const url = new URL(req.url, 'http://localhost:5173');
-    //const url = new URL(req.url, 'http://localhost:3000');
-
     // Vérifiez si le paramètre "code" est présent dans l'URL
+    const url = new URL(req.url, 'http://localhost:5173');
     if (url.searchParams.has('code')) {
       const code = url.searchParams.get('code');
       //console.log("Code: ", code);
@@ -39,11 +36,11 @@ export class AuthService {
 
       // Echange 'code' vs a 42 'access_token' to get User's datas.
       try {
-        const uid: string = 'u-s4t2ud-a7cd0971a7ed6d84018903f343a3da6756624febce7000fb81d58f50e35e76aa';
-        const secret: string = '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';
+        const uid: string = this.configService.get<string>('UID');
+        const secret: string = this.configService.get<string>('42_SECRET');
+        //console.log("uid: ", uid);
+        //console.log("secret: ", secret);
         const redirect_uri = encodeURIComponent('http://localhost:3000/auth/42api-return');
-        //const uid = process.env.UID;
-        //const secret = process.env.SECRET;
 
         console.log("Tentative recuperation { Access ( 42 ) Token } .. .");
         const url = 'https://api.intra.42.fr/oauth/token';
@@ -82,7 +79,6 @@ export class AuthService {
           }
           console.log("user Me: ", user);
           await this.userService.add_new_user(user);
-          //user_in_db = await this.userService.find_user_by_id42(user.id42);
         }
         else {
           console.log("User:  [ ", user_in_db.login, ' ] => Already exist in the Db');
@@ -216,7 +212,7 @@ export class AuthService {
 
   // * - -[  Register New { User }  ]- - *
   async registerNewUser(bodyRequest) {
-    console.log("BodyRequest: ", bodyRequest);
+    console.log("-[ Auth-RegisterNewUser ]- BodyRequest: ", bodyRequest);
     const email = bodyRequest.email;
     const name = bodyRequest.name;
     let password = bodyRequest.password;
@@ -224,18 +220,13 @@ export class AuthService {
     if (!email || !name || !password) {
       return null;
     }
-    try {
-      const user = await this.userService.find_user_by_login(name);
-      if (user) {
-        throw new BadRequestException('User already exists')
-      }
-      const hash = await this.hashData(password);
-      return this.addNewRegistredUser(email, name, password);
+    const user = await this.userService.find_user_by_login(name);
+    if (user) {
+      return null;
+      //throw new BadRequestException('User already exists')
     }
-    catch (e) {
-      throw new BadRequestException('User already exists');
-
-    }
+    const hash = await this.hashData(password);
+    return this.addNewRegistredUser(email, name, password);
   }
 
   // * - -[  Add New { User } to DB and send a { JWT } ]- - *
@@ -281,7 +272,8 @@ export class AuthService {
       return this.asign_jtw_token(jwt_payload);
     }
     catch (e) {
-      throw new UnauthorizedException();
+      return null;
+      //throw new UnauthorizedException();
     }
   }
   ///////////////////////////////////////////////////////////////////////////////////////////

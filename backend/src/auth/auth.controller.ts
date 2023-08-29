@@ -87,7 +87,10 @@ export class AuthController {
     @Post('register')
     async register(@Body() bodyRequest, @Response() res) {
         const jwt = await this.authService.registerNewUser(bodyRequest);
-        const frontendUrl = `http://localhost:5173/?jwt=${jwt}`;
+        let frontendUrl = `http://localhost:5173`;
+        if (jwt !== null) {
+            const frontendUrl = `http://localhost:5173/?jwt=${jwt}`;
+        }
         res.redirect(frontendUrl);
     }
 
