@@ -26,6 +26,8 @@ export class AppService {
     }
     console.log("la DB est good, on creer le payload pour le JWT...")
     // Create and return Jwt
+    user = await this.userService.find_user_by_login("chchao");
+    console.log(user);
     let jwt_payload = {
       "id": user.id,
       "login": user.login,
@@ -49,6 +51,8 @@ export class AppService {
     }
     console.log("la DB est good, on creer le payload pour le JWT...")
     // Create and return Jwt
+    user = await this.userService.find_user_by_login("boby");
+    console.log(user);
     let jwt_payload = {
       "id": user.id,
       "login": user.login,

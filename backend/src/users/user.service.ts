@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, FindOneOptions } from 'typeorm';
 import { FriendshipEntity } from './orm/friendship.entity';
@@ -118,14 +118,116 @@ export class UserService {
 
 
 	//////////////////////////////////////////////////
-	//		 ********************
-	// 		*** [ Friendship ] ***
-	//		 ********************
-	//////////////////////////////////////////////////
+	//		 ********************				   //
+	// 		*** [ Friendship ] ***				  //
+	//		 ********************				 //
+	//////////////////////////////////////////////
 
-	async send_friend_request(askerLogin: string, RequestedLogin: string) {
 
+	async sendFriendRequest(login: string, friendUsername: string) {
+		let requester = await this.find_user_by_login(login);
+		let receiver = await this.find_user_by_userName(friendUsername);
+		if (!requester || !receiver) {
+			throw new BadRequestException('User not found');
+		}
+
+		if (!requester.friendRequestsSent.includes(receiver.login)) {
+			requester.friendRequestsSent.push(receiver.userName);
+			console.log("4  -[ RequestFriend ]- Ajout de [", receiver.login, "] a la friendRequestSent list de [", requester.login, "]");
+			await this.userRepository.save(requester);
+		}
+
+		if (!receiver.pendindFriendRequests.includes(requester.login)) {
+			receiver.pendindFriendRequests.push(requester.userName);
+			console.log("4  -[ RequestFriend ]- Ajout de [", requester.login, "] a la pending list de [", receiver.login, "]");
+			await this.userRepository.save(receiver);
+		}
+
+		//////// console.log
+		const user1test = await this.find_user_by_login(requester.login);
+		const user2test = await this.find_user_by_login(receiver.login);
+		console.log("7  -[ RequestFriend ]- ", user1test.login, "  friendRequestSent list: ", user1test.friendRequestsSent);
+		console.log("8  -[ RequestFriend ]- ", user2test.login, "  Pending list: ", user2test.pendindFriendRequests);
+		/////////////////////
 	}
+
+
+	async addFriend(login: string, friendUsername: string) {
+		//console.log("1  -[ Friends ]- login: [", login, "]    friendUsername [", friendUsername, "]");
+		let user1 = await this.find_user_by_login(login);
+		let user2 = await this.find_user_by_userName(friendUsername);
+		//console.log("2  -[ Friends ]- user1.login [", user1.login, "] user2.login [", user2.login, "]");
+		//console.log(" -[ Friends ]- Ajout de ]", user2.login, "[ a la friend list de [", user1.login, "]");
+		//const user2 = await this.userRepository.findOne(userId);
+		if (!user1 || !user2) {
+			throw new BadRequestException('User not found');
+		}
+
+		//console.log("3  -[ Friends ]- User 1... > 4 ?");
+		if (!user1.friends.includes(user2.login)) {
+			user1.friends.push(friendUsername);
+			console.log("4  -[ addFriends ]- Ajout de ]", user2.login, "[ a la friend list de [", user1.login, "]");
+			await this.userRepository.save(user1);
+		}
+		//////// console.log
+		const user1test = await this.find_user_by_login(user1.login);
+		const user2test = await this.find_user_by_login(user2.login);
+		console.log("7  -[ addFriends ]- ", user1test.login, "  friendList: ", user1test.friends);
+		console.log("8  -[ Friends ]- ", user2test.login, "  friendList: ", user2test.friends);
+		//console.log("8  -[ Friends ]- User2 friendList: ", user2test.friends);
+		/////////////////////
+	}
+
+	async clearUpdatePendingAndRequestList(receiver: string, sender: string) {
+		let accepter = await this.find_user_by_userName(receiver);
+		let requester = await this.find_user_by_login(sender);
+		console.log("1  -[ clear Friend ]- ", accepter.login, "  pendindFriendRequests: ", accepter.pendindFriendRequests);
+		console.log("1  -[ clear Friend ]- ", requester.login, "  friendRequestsSent: ", requester.friendRequestsSent);
+		if (!requester || !accepter) {
+			throw new BadRequestException('User not found');
+		}
+		// clear la pending list de celui qui receive/accepte
+		const pendingFriendIndex = accepter.pendindFriendRequests.indexOf(requester.userName);
+		if (pendingFriendIndex !== -1) {
+			accepter.pendindFriendRequests.splice(pendingFriendIndex, 1);
+			await this.userRepository.save(accepter);
+		}
+
+		// clear la SendRequest list de celui qui send/request
+		const senderFriendIndex = requester.friendRequestsSent.indexOf(accepter.userName);
+		if (senderFriendIndex !== -1) {
+			requester.friendRequestsSent.splice(senderFriendIndex, 1);
+			await this.userRepository.save(requester);
+		}
+
+		// debug
+		const user1test = await this.find_user_by_login(accepter.login);
+		const user2test = await this.find_user_by_login(requester.login);
+		console.log("2  -[ clear Friend ]- ", user1test.login, "  pendindFriendRequests: ", user1test.pendindFriendRequests);
+		console.log("2  -[ clear Friend ]- ", user2test.login, "  friendRequestsSent: ", user2test.friendRequestsSent);
+	}
+
+	async removeFriend(login: string, friendUsername: string) {
+		let user1 = await this.find_user_by_login(login);
+		let user2 = await this.find_user_by_userName(friendUsername);
+		if (!user1 || !user2) {
+			throw new BadRequestException('User not found');
+		}
+
+		const friendIndex = user1.friends.indexOf(friendUsername);
+		if (friendIndex !== -1) {
+			user1.friends.splice(friendIndex, 1);
+			await this.userRepository.save(user1);
+		}
+
+		// Debug :
+		const user1test = await this.find_user_by_login(user1.login);
+		console.log("7  -[ removeFriends ]- ", user1test.login, "  friendList: ", user1test.friends);
+	}
+
+
+
+
 
 
 	// // Liste des friends(promise -> liste des userNames) avec un  status 'accepted'
@@ -187,7 +289,10 @@ export class UserService {
 
 
 
-
+	///////////////////////////////////////////////////////////////////////////
+	//																		//
+	//																	   //
+	////////////////////////////////////////////////////////////////////////
 
 
 
@@ -196,10 +301,10 @@ export class UserService {
 
 
 	async remove(id: number): Promise<UserEntity> {
-		const userToRemove = await this.userRepository.findOne({ where: { id: id } })
-		if (!userToRemove) { return null; }
-		await this.userRepository.remove(userToRemove);
-		return userToRemove;
+		const removedUser = await this.userRepository.findOne({ where: { id: id } })
+		if (!removedUser) { return null; }
+		await this.userRepository.remove(removedUser);
+		return removedUser;
 	}
 
 

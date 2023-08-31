@@ -238,9 +238,10 @@ export class AuthService {
 
   // * - - - [  J.W.T  ] - - - *
   async asign_jtw_token(payload: any): Promise<any> {
+    console.log('-[ Auth Asign_jwt_token ]-  Payload: ', payload);
     let jwt = await this.jwtService.signAsync(payload);
     const res = this.jwtService.decode(jwt) as { [key: string]: any };
-    console.log('New Jwt encode: ', res);
+    console.log('-[ Auth Asign_jwt_token ]-New Jwt encode: ', res);
     return jwt;
     //return { access_token: this.jwtService.sign(payload) };
   }

@@ -38,15 +38,6 @@ export class UserController {
 	async profileOther(@Query('username') username: string, @Request() req, @Response() res) {
 		console.log(" -[ ProfileOther User.Ctrl ]- QueryParam: ", username);
 		try {
-
-			// const headers = req.headers;
-			// const Token = req.headers.authorization;
-			// const [, jwtToken] = Token.split(' ');
-			// const jwt = this.jwtService.decode(jwtToken) as { [key: string]: any };
-			// // 4 prems lignes a supprimer
-
-			//extraire username de url 
-
 			const userProfile = await this.userService.find_user_by_userName(username);
 			const user = {
 				login: userProfile.login,
@@ -61,6 +52,77 @@ export class UserController {
 		}
 	}
 
+	@HttpCode(HttpStatus.OK)
+	@Post('sendFriendRequest')
+	async sendFriendRequest(@Request() req) {
+		console.log(" -[ requestFriends  / UsrCtrl ]- ");
+		const token = req.headers.authorization;
+		if (token) {
+			const jwt = token.replace('Bearer', '').trim();
+			const decoded = this.jwtService.decode(jwt) as { [key: string]: any };
+			const friendUsername: string = req.body.data.username;
+
+			this.userService.sendFriendRequest(decoded.login, friendUsername);
+			//	const user2login = await this.userService.find_user_by_userName(friendUsername);
+			//	const user1username = await this.userService.find_user_by_login(decoded.login);
+			//	this.userService.sendFriendRequest(user2login.login, user1username.userName);
+		}
+	}
+
+	@HttpCode(HttpStatus.OK)
+	@Post('refuseFriendRequest')
+	async refuseFriendRequest(@Request() req) {
+		console.log(" -[ refuse Friends  / UsrCtrl ]- ");
+		const token = req.headers.authorization;
+		if (token) {
+			const jwt = token.replace('Bearer', '').trim();
+			const decoded = this.jwtService.decode(jwt) as { [key: string]: any };
+			const friendUsername: string = req.body.data.username;
+
+			const user2login = await this.userService.find_user_by_userName(friendUsername);
+			const user1username = await this.userService.find_user_by_login(decoded.login);
+			// clear pending and request List of User
+			this.userService.clearUpdatePendingAndRequestList(user1username.userName, user2login.login);
+		}
+	}
+
+	@HttpCode(HttpStatus.OK)
+	@Post('addFriend')
+	async addNewFriendship(@Request() req) {
+		console.log(" -[ addFriends  / UsrCtrl ]- ");
+		const token = req.headers.authorization;
+		if (token) {
+			const jwt = token.replace('Bearer', '').trim();
+			const decoded = this.jwtService.decode(jwt) as { [key: string]: any };
+			//console.log('New Jwt encode: ', decoded);
+
+			const friendUsername: string = req.body.data.username;
+			//console.log(" -[ addFriends  / UsrCtrl ]-  req.body.data [", req.body.data);
+			//console.log(" -[ addFriends  / UsrCtrl ]-  friend Username: [", friendUsername, '] et decoded.login [', decoded.login, "]");
+			this.userService.addFriend(decoded.login, friendUsername);
+			const user2login = await this.userService.find_user_by_userName(friendUsername)
+			const user1username = await this.userService.find_user_by_login(decoded.login)
+			this.userService.addFriend(user2login.login, user1username.userName);
+			// clear pending and request List of User
+			this.userService.clearUpdatePendingAndRequestList(user1username.userName, user2login.login);
+		}
+	}
+
+	@HttpCode(HttpStatus.OK)
+	@Post('removeFriend')
+	async removeFriendship(@Request() req) {
+		console.log(" -[ removeFriends  / UsrCtrl ]- ");
+		const token = req.headers.authorization;
+		if (token) {
+			const jwt = token.replace('Bearer', '').trim();
+			const decoded = this.jwtService.decode(jwt) as { [key: string]: any };
+			const friendUsername: string = req.body.data.username;
+			this.userService.removeFriend(decoded.login, friendUsername);
+			const user2login = await this.userService.find_user_by_userName(friendUsername)
+			const user1username = await this.userService.find_user_by_login(decoded.login)
+			this.userService.removeFriend(user2login.login, user1username.userName);
+		}
+	}
 
 	@HttpCode(HttpStatus.OK)
 	@Get('/all')

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
+	import { closeModal } from "$lib/store/ModalValues";
 	import { onMount } from "svelte";
 
 	export let username: string;
@@ -75,6 +76,97 @@
 	// 	}
 	// 	goto("/");
 	// }
+
+	async function handleRefuseFriendRequest() {
+		const jwt = localStorage.getItem("jwt");
+		const data = { username: username };
+		const response = await fetch(
+			"http://localhost:3000/user/refuseFriendRequest",
+			{
+				method: "POST",
+				headers: {
+					Authorization: `Bearer ${jwt}`,
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ data }),
+			}
+		);
+		if (response.ok) {
+			console.log("response { OK } du [ Add Friend ]");
+		} else {
+			console.log("response { NOT OK } du [ Add Friend ]");
+		}
+		closeModal();
+		goto("/Friends");
+	}
+
+	async function handleSendFriendRequest() {
+		const jwt = localStorage.getItem("jwt");
+		const data = { username: username };
+		const response = await fetch(
+			"http://localhost:3000/user/sendFriendRequest",
+			{
+				method: "POST",
+				headers: {
+					Authorization: `Bearer ${jwt}`,
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ data }),
+			}
+		);
+		if (response.ok) {
+			console.log("response { OK } du [ Add Friend ]");
+		} else {
+			console.log("response { NOT OK } du [ Add Friend ]");
+		}
+		closeModal();
+		goto("/Friends");
+	}
+
+	async function handleAcceptFriend() {
+		const jwt = localStorage.getItem("jwt");
+		const data = { username: username };
+		//console.log("-[ Add Friend ]- username sent: ", username);
+		const response = await fetch("http://localhost:3000/user/addFriend", {
+			method: "POST",
+			headers: {
+				Authorization: `Bearer ${jwt}`,
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ data }),
+		});
+		if (response.ok) {
+			console.log("response { OK } du [ Add Friend ]");
+		} else {
+			console.log("response { NOT OK } du [ Add Friend ]");
+		}
+		closeModal();
+		goto("/Friends");
+	}
+
+	async function handleRemoveFriend() {
+		const jwt = localStorage.getItem("jwt");
+		const data = { username: username };
+		//console.log("-[ Remove Friend ]- username sent: ", username);
+		const response = await fetch(
+			"http://localhost:3000/user/removeFriend",
+			{
+				method: "POST",
+				headers: {
+					Authorization: `Bearer ${jwt}`,
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ data }),
+			}
+		);
+		if (response.ok) {
+			console.log("response { OK } du [ Remove Friend ]");
+		} else {
+			console.log("response { NOT OK } du [ Remove Friend ]");
+		}
+		closeModal();
+		goto("/Friends");
+	}
 </script>
 
 <div class="profile-Page">
@@ -86,6 +178,26 @@
 		<p>Login : {login}</p>
 		<p>Name : {username}</p>
 	</div>
+	<button
+		on:click={() => {
+			handleAcceptFriend();
+		}}>accept Friend</button
+	>
+	<button
+		on:click={() => {
+			handleRemoveFriend();
+		}}>undo Friendship</button
+	>
+	<button
+		on:click={() => {
+			handleSendFriendRequest();
+		}}>Send friend Request</button
+	>
+	<button
+		on:click={() => {
+			handleRefuseFriendRequest();
+		}}>Refuse Friendship</button
+	>
 </div>
 
 <!-- Faire affichage de differents buttons en fonction du friend status -> sendFriendRequest,

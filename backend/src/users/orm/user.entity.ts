@@ -47,9 +47,26 @@ export class UserEntity {
   @Column({ nullable: true, default: null, })
   firstName: string;
 
-  // 'online' 'offline' 'inGame'
-  @Column({ default: "online" })
-  liveStatus: string
+  // Friend System Management
+  @Column('text', { array: true, default: [] })
+  friends: string[]; // List of friend usernames
+
+  @Column('text', { array: true, default: [] })
+  friendRequestsSent: string[]; // List of requests sent to other user and waiting for answer
+
+  @Column('text', { array: true, default: [] })
+  pendindFriendRequests: string[]; // List of friend requests received
+
+  @Column('text', { array: true, default: [] })
+  blockedUser: string[]; // List of users I blocked
+
+  @Column('text', { array: true, default: [] })
+  blockedBy: string[]; // List of users who blocked me
+
+
+  // // 'online' 'offline' 'inGame'
+  // @Column({ default: "online" })
+  // liveStatus: string
 
   @BeforeInsert()
   emailToLowerCases() {
