@@ -1,4 +1,12 @@
 <script lang="ts">
+	// Afficher la liste des user online
+	// ajouter un bouton 'send request'
+
+	// Afficher la liste des amis
+	// ajouter bouton 'unfriend'
+
+	// afficher la liste des amis en attente acceptation
+	// ajouter bouton 'accept'
 </script>
 
 <div>

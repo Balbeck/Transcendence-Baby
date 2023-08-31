@@ -1,61 +1,48 @@
 
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Redirect, Request, Response, UnauthorizedException, UseGuards, Put } from "@nestjs/common";
-import * as dotenv from 'dotenv';
 import { AuthService } from "./auth.service";
 import { AuthGuard } from './guards/auth.guard';
 import { UserService } from "src/users/user.service";
 import { JwtService } from "@nestjs/jwt";
+import { ConfigService } from "@nestjs/config";
+import * as dotenv from 'dotenv';
 dotenv.config();
-import { toDataURL } from "qrcode";
-import * as otplib from 'otplib';
 
 const frontUrl = 'http://localhost:5173';
-
-const api_uid = 'u-s4t2ud-a7cd0971a7ed6d84018903f343a3da6756624febce7000fb81d58f50e35e76aa';
 const redirect_uri = encodeURIComponent('http://localhost:3000/auth/42api-return');
-//const redirect_uri = encodeURIComponent('http://localhost:5173');
-//const code_uri = encodeURIComponent('http://localhost:5173');
 
 @Controller('auth')
 export class AuthController {
     constructor(
         private readonly authService: AuthService,
         private userService: UserService,
-        private jwtService: JwtService) { }
+        private jwtService: JwtService,
+        private configService: ConfigService,
+    ) { }
 
 
     /////////////////////////////////   [ 4 2   A u t h ]        //////////////////////////////////
     // --> [ ** Etape 1 **   -> Rediriger le User vers l'Api de 42 afin d'avoir un GET 'code' ] <--
     @Get('42')
     @HttpCode(302)
-    @Redirect(`https://api.intra.42.fr/oauth/authorize?client_id=${api_uid}&redirect_uri=${redirect_uri}&response_type=code`)
-    //@Redirect(`https://api.intra.42.fr/oauth/authorize?client_id=${api_uid}&redirect_uri=${code_uri}&response_type=code`)
-    redirect() { }
+    redirect(@Response() res) {
+        const api_uid: string = this.configService.get<string>('UID');
+        const url_42: string = `https://api.intra.42.fr/oauth/authorize?client_id=${api_uid}&redirect_uri=${redirect_uri}&response_type=code`;
+        res.redirect(url_42);
+    }
 
     //--> [ ** Etape 2 **  -> Get le retour de 42Api pour extraire le 'code', verif Auth make requests a 42Api ] <--
     @Get('42api-return')
     async authentificate_42_User(@Request() req, @Response() res) {
         const jwt = await this.authService.authentification_42(req);
         //  console.log("le jwt Controller:", jwt);
-
         const jwtdecoded = await this.jwtService.decode(jwt) as { login: string };;
         //console.log("le jwtdecoded :", jwtdecoded);
         const user = await this.userService.find_user_by_login(jwtdecoded.login);
         if (user.fa2 === true) {
             console.log("-[ Auth 42 ]- 2fa user [ ", user.login, " ] { True }");
-
             const login: string = user.login;
-            //const QrImg = await this.userService.get_QRCode(login);
-            //const QrImg = await this.userService.enable_2fa(login);
-
-            //const QrCodePromise = this.authService.generateQrCodeDataURL(user.fa2QRCode);
-            //const QrCode = await QrCodePromise;
-
-            // const q = user.fa2QRCode;
-            // const qr = await toDataURL(q);
-            // console.log("[ QR Code - Auth Controller ] q : ", q);
             const frontUrl = `http://localhost:5173/?login=${login}`;
-            //const frontUrl = `http://localhost:5173/?qrcode=${QrImg}&login=${login}`;
             res.redirect(frontUrl);
         }
         else {
@@ -73,8 +60,6 @@ export class AuthController {
         return true
     }
     /////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 
 
 
@@ -102,19 +87,13 @@ export class AuthController {
         if (jwt !== null) {
             frontendUrl = `http://localhost:5173/?jwt=${jwt}`;
         }
-        // if (jwt === null) { frontendUrl = `http://localhost:5173`; }
-        // else { frontendUrl = `http://localhost:5173/?jwt=${jwt}`; }
         res.redirect(frontendUrl);
     }
-
-
     // /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
     // /////////////////////////////////   [ User Modifications ]      //////////////////////////////////
-
-
     @HttpCode(HttpStatus.OK)
     @Get('verify_2fa')
     async verify_2fa(@Request() req, @Response() res) {
@@ -163,13 +142,6 @@ export class AuthController {
             //return le bon Url a afficher 
             const QrImg = await this.userService.enable_2fa(login);
             //console.log("QrImg Envoye au front:  ", QrImg)
-
-            // const secret = otplib.authenticator.generateSecret();
-            // // Genere QRCode
-            // const user = await this.userService.find_user_by_login(login);
-            // const email = user.email;
-            // const otpauthUrl = otplib.authenticator.keyuri(email, 'Pong_Transcendence', secret);
-            // const qr = await toDataURL(otpauthUrl);
             res.json({ url: QrImg });
 
         }
@@ -185,10 +157,6 @@ export class AuthController {
         const data = { urlcode: QrUrl };
         res.json(data);
     }
-
-
-
-
 
 
     @HttpCode(HttpStatus.OK)
@@ -258,13 +226,28 @@ export class AuthController {
                 const login = decoded.login;
                 console.log('-[ Logout ]- AuthController: login', login);
 
-                this.authService.logout(login);
-                console.log('-[ Logout ]- Updated Logout User: ', await this.userService.find_user_by_login(login))
+                this.authService.logout(login, jwt);
+                //console.log('-[ Logout ]- Updated Logout User: ', await this.userService.find_user_by_login(login))
             }
             res.redirect('http://localhost:5173');
         }
     }
     // /////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    @HttpCode(HttpStatus.OK)
+    @Get('onlineUsers')
+    async getOnlineUsers(@Request() req, @Response() res) {
+        console.log(" -[ Online Users (Auth-Ctrl) ]- ");
+        const headers = req.headers;
+        const Token = req.headers.authorization;
+        const [, jwtToken] = Token.split(' '); // Divise la chaîne en fonction de l'espace et ignore la première partie (Bearer)
+        const jwt = this.jwtService.decode(jwtToken) as { [key: string]: any };
+
+        let onlineUserlist: string[];
+        onlineUserlist = this.authService.get_Online_Usernames(jwt.login);
+        // const onlineUserlist: string[] = this.authService.get_All_Online_UserNames_inMap();
+        console.log("OnlineUser list: ", onlineUserlist);
+        res.json(onlineUserlist);
+    }
 
 }

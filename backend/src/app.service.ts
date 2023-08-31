@@ -32,12 +32,14 @@ export class AppService {
       "username": "chchao"
     }
     console.log("Creation du Token avec payload pour [ chchao ]...");
-    return this.authService.asign_jtw_token(jwt_payload);
+    const jwt = this.authService.asign_jtw_token(jwt_payload);
+    this.authService.add_Online_User_inMap(await jwt, user);
+    return jwt;
   }
 
   async loginHector() {
     // Verif si user in Db before creation
-    let user: any = await this.userService.find_user_by_login("balbecke");
+    let user: any = await this.userService.find_user_by_login("boby");
     if (!user) {
       console.log("User: [ balbecke ] doesnt exist in DB, So lets create it ! *");
       user = this.addUser2();
@@ -50,9 +52,11 @@ export class AppService {
     let jwt_payload = {
       "id": user.id,
       "login": user.login,
-      "username": "balbecke"
+      "username": "boby"
     }
     console.log("Creation du Token avec payload pour [ balbecke ]...");
+    const jwt = this.authService.asign_jtw_token(jwt_payload);
+    this.authService.add_Online_User_inMap(await jwt, user);
     return this.authService.asign_jtw_token(jwt_payload);
   }
 
@@ -77,13 +81,13 @@ export class AppService {
 
   addUser2() {
     const user2: any = {
-      id42: 79333,
-      login: "balbecke",
-      userName: "balbecke",
-      firstName: "Benjamin",
-      lastName: "Albecker",
-      email: "balbecke@student.42nice.fr",
-      avatar: "https://cdn.intra.42.fr/users/75ecc020e16ebd135ed82edd7aaf02b7/balbecke.jpg",
+      id42: 42,
+      login: "boby",
+      userName: "boby",
+      firstName: "Brutus",
+      lastName: "alBrutus",
+      email: "kekedu06@gmail.com",
+      avatar: 'images/defaultAvatar.jpg'
     }
     this.userService.add_new_user(user2);
     return this.userService.find_user_by_login(user2.login);

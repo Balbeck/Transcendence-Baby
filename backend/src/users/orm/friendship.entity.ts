@@ -1,21 +1,18 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { UserEntity } from "./user.entity";
 
-
-@Entity()
+@Entity('friendships')
 export class FriendshipEntity {
-
-	@ManyToOne(() => UserEntity, { onDelete: 'CASCADE' })
-	user: UserEntity;
-
-	@ManyToOne(() => UserEntity, { onDelete: 'CASCADE' })
-	friend: UserEntity;
-
 	@PrimaryGeneratedColumn()
-	id: number
+	id: number;
+
+	@ManyToOne(() => UserEntity)
+	requester: UserEntity;
+
+	@ManyToOne(() => UserEntity)
+	recipient: UserEntity;
 
 	// status : 'pending', 'accepted', 'blocked'
-	@Column()
-	status: string
-
+	@Column({ default: 'pending' })
+	status: string;
 }

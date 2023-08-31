@@ -35,6 +35,9 @@
 	function handleProfile() {
 		goto("Profile");
 	}
+	function handleFriends() {
+		goto("Friends");
+	}
 </script>
 
 <nav class="w-full flex gap-10 p-2 justify-center items-center h-full">
@@ -53,12 +56,8 @@
 			openModal("chat");
 		}}>Chat</button
 	>
-	<button
-		on:click={() => {
-			goto("/");
-			openModal("findFriends");
-		}}>Find Friends</button
-	>
+	<!-- <button on:click={() => { goto("/"); openModal("findFriends"); }}>Find Friends</button> -->
+	<button on:click={handleFriends}>Friends</button>
 	<button on:click={handleLoggout}>Logout</button>
 </nav>
 

@@ -1,4 +1,4 @@
-import { Controller, Body, Get, Header, HttpCode, HttpStatus, Request, Response, UseGuards, UnauthorizedException, Put, Delete, Param, Patch, Post } from '@nestjs/common';
+import { Controller, Query, Body, Get, Header, HttpCode, HttpStatus, Request, Response, UseGuards, UnauthorizedException, Put, Delete, Param, Patch, Post } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserEntity } from './orm/user.entity';
 import { AuthGuard } from '@nestjs/passport';
@@ -20,9 +20,9 @@ export class UserController {
 			const headers = req.headers;
 			const Token = req.headers.authorization;
 			const [, jwtToken] = Token.split(' '); // Divise la chaîne en fonction de l'espace et ignore la première partie (Bearer)
-			console.log(" -[ Profile UserCtrl ]- jwtToken: ", jwtToken);
+			//console.log(" -[ Profile UserCtrl ]- jwtToken: ", jwtToken);
 			const jwt = this.jwtService.decode(jwtToken) as { [key: string]: any };
-			console.log(" -[ Profile UserCtrl ]- decode jwt: ", jwt);
+			//console.log(" -[ Profile UserCtrl ]- decode jwt: ", jwt);
 			console.log(" -[ Profile UserCtrl ]- jwt id: ", jwt.id);
 			const user = await this.userService.find_user_by_id(jwt.id);
 			res.json(user);
@@ -33,8 +33,33 @@ export class UserController {
 		}
 	}
 
+	@HttpCode(HttpStatus.OK)
+	@Get('profileOther')
+	async profileOther(@Query('username') username: string, @Request() req, @Response() res) {
+		console.log(" -[ ProfileOther User.Ctrl ]- QueryParam: ", username);
+		try {
 
+			// const headers = req.headers;
+			// const Token = req.headers.authorization;
+			// const [, jwtToken] = Token.split(' ');
+			// const jwt = this.jwtService.decode(jwtToken) as { [key: string]: any };
+			// // 4 prems lignes a supprimer
 
+			//extraire username de url 
+
+			const userProfile = await this.userService.find_user_by_userName(username);
+			const user = {
+				login: userProfile.login,
+				username: userProfile.userName,
+				avatar: userProfile.avatar
+			}
+			res.json(user);
+		}
+		catch (e) {
+			console.log("-->  -{ Catch }-  -  [ Profile UserCtrl ] (e): ", e);
+			throw new UnauthorizedException;
+		}
+	}
 
 
 	@HttpCode(HttpStatus.OK)

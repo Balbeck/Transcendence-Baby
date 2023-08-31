@@ -40,8 +40,8 @@
 					<Chat on:closeModal={closeModal} />
 				{:else if selectedPage_Value === "game"}
 					<Game on:closeModal={closeModal} />
-				{:else if selectedPage_Value === "findFriends"}
-					<FindFriends on:closeModal={closeModal} />
+					<!-- {:else if selectedPage_Value === "findFriends"}
+					<FindFriends on:closeModal={closeModal} /> -->
 				{:else if selectedPage_Value === "errorMsg"}
 					<ErrorModal msg={msgError} on:closeModal={closeModal} />
 				{/if}

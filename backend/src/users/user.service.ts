@@ -1,10 +1,3 @@
-
-//     async setRefreshToken(user: User, token: string): Promise<void> {
-//       this.userRepository.update(user.id, {
-//         refresh_token: token,
-//       });
-//     }
-
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, FindOneOptions } from 'typeorm';
@@ -47,7 +40,6 @@ export class UserService {
 
 	async add_new_user(payload: any) {
 		let user = new UserEntity();
-		//	user. = payload.;
 		user.login = payload.login;
 		user.userName = payload.userName;
 		user.email = payload.email;
@@ -95,21 +87,9 @@ export class UserService {
 		const url = await qrcode.toDataURL(otpauthUrl)
 		//console.log("-[Usr Enable 2Fa]- code:  ", url);
 
-		// const qrCodeDataURL = await new Promise<string>((resolve, reject) => {
-		// 	qrcode.toDataURL(otpauthUrl, (err, dataURL) => {
-		// 		if (err) {
-		// 			reject(err);
-		// 		} else {
-		// 			resolve(dataURL);
-		// 		}
-		// 	});
-		// });
-		// Save BdD
-		//await this.userRepository.update({ login }, { fa2: true });
 		await this.userRepository.update({ login }, { fa2Secret: secret });
 		await this.userRepository.update({ login }, { fa2QRCode: url });
 		return url;
-		//await this.userRepository.update({ login }, { fa2QRCode: qrCodeDataURL });
 	}
 
 	async turn_2fa_on(login: string) {
@@ -123,14 +103,7 @@ export class UserService {
 
 	async get_QRCode(login: string) {
 		const user = await this.find_user_by_login(login);
-
 		const url = user.fa2QRCode;
-		// const email = user.email;
-		// const secret = otplib.authenticator.generateSecret();
-		// const otpauthUrl = otplib.authenticator.keyuri(email, 'Pong_Transcendence', secret);
-		// const url = await qrcode.toDataURL(otpauthUrl);
-		// await this.userRepository.update({ login }, { fa2Secret: secret });
-		//console.log("-[ Usr Ser ]- {Get QR Code} url:  ", url)
 		return url;
 	}
 
@@ -150,61 +123,66 @@ export class UserService {
 	//		 ********************
 	//////////////////////////////////////////////////
 
-	// Liste des friends(promise -> liste des userNames) avec un  status 'accepted'
-	async get_Accepted_friend_UserNames(userId: number): Promise<string[]> {
-		const user = await this.userRepository
-			.createQueryBuilder('user')
-			.leftJoinAndSelect('user.friendship_relation', 'friendship')
-			.leftJoinAndSelect('friendship.friend', 'friend')
-			.where('user.id = :userId', { userId })
-			.andWhere('friendship.status = :status', { status: 'accepted' })
-			.getOne();
+	async send_friend_request(askerLogin: string, RequestedLogin: string) {
 
-		if (!user) { return []; }
-
-		else {
-			const acceptedFriendUserNames = user.friendship_relation
-				.map((friendship) => friendship.friend.userName);
-			return acceptedFriendUserNames;
-		}
 	}
 
-	// Liste des friends(promise -> liste des userNames) avec un  status 'pending'
-	async get_Pending_friend_UserNames(userId: number): Promise<string[]> {
-		const user = await this.userRepository
-			.createQueryBuilder('user')
-			.leftJoinAndSelect('user.friendship_relation', 'friendship')
-			.leftJoinAndSelect('friendship.friend', 'friend')
-			.where('user.id = :userId', { userId })
-			.andWhere('friendship.status = :status', { status: 'accepted' })
-			.getOne();
 
-		if (!user) { return []; }
+	// // Liste des friends(promise -> liste des userNames) avec un  status 'accepted'
+	// async get_Accepted_friend_UserNames(userId: number): Promise<string[]> {
+	// 	const user = await this.userRepository
+	// 		.createQueryBuilder('user')
+	// 		.leftJoinAndSelect('user.friendship_relation', 'friendship')
+	// 		.leftJoinAndSelect('friendship.friend', 'friend')
+	// 		.where('user.id = :userId', { userId })
+	// 		.andWhere('friendship.status = :status', { status: 'accepted' })
+	// 		.getOne();
 
-		else {
-			const acceptedFriendUserNames = user.friendship_relation
-				.map((friendship) => friendship.friend.userName);
-			return acceptedFriendUserNames;
-		}
-	}
+	// 	if (!user) { return []; }
 
-	// Fct Generique pour accepted, pending et blocked
-	async get_friendUserNames_by_status(userId: number, status: string): Promise<string[]> {
-		const user = await this.userRepository
-			.createQueryBuilder('user')
-			.leftJoinAndSelect('user.friendship_relation', 'friendship')
-			.leftJoinAndSelect('friendship.friend', 'friend')
-			.where('user.id = :userId', { userId })
-			.andWhere('friendship.status = :status', { status: status })
-			.getOne();
+	// 	else {
+	// 		const acceptedFriendUserNames = user.friendship_relation
+	// 			.map((friendship) => friendship.friend.userName);
+	// 		return acceptedFriendUserNames;
+	// 	}
+	// }
 
-		if (!user) { return []; }
-		else {
-			const friendUserNames = user.friendship_relation
-				.map((friendship) => friendship.friend.userName);
-			return friendUserNames;
-		}
-	}
+	// // Liste des friends(promise -> liste des userNames) avec un  status 'pending'
+	// async get_Pending_friend_UserNames(userId: number): Promise<string[]> {
+	// 	const user = await this.userRepository
+	// 		.createQueryBuilder('user')
+	// 		.leftJoinAndSelect('user.friendship_relation', 'friendship')
+	// 		.leftJoinAndSelect('friendship.friend', 'friend')
+	// 		.where('user.id = :userId', { userId })
+	// 		.andWhere('friendship.status = :status', { status: 'accepted' })
+	// 		.getOne();
+
+	// 	if (!user) { return []; }
+
+	// 	else {
+	// 		const acceptedFriendUserNames = user.friendship_relation
+	// 			.map((friendship) => friendship.friend.userName);
+	// 		return acceptedFriendUserNames;
+	// 	}
+	// }
+
+	// // Fct Generique pour accepted, pending et blocked
+	// async get_friendUserNames_by_status(userId: number, status: string): Promise<string[]> {
+	// 	const user = await this.userRepository
+	// 		.createQueryBuilder('user')
+	// 		.leftJoinAndSelect('user.friendship_relation', 'friendship')
+	// 		.leftJoinAndSelect('friendship.friend', 'friend')
+	// 		.where('user.id = :userId', { userId })
+	// 		.andWhere('friendship.status = :status', { status: status })
+	// 		.getOne();
+
+	// 	if (!user) { return []; }
+	// 	else {
+	// 		const friendUserNames = user.friendship_relation
+	// 			.map((friendship) => friendship.friend.userName);
+	// 		return friendUserNames;
+	// 	}
+	// }
 
 
 
