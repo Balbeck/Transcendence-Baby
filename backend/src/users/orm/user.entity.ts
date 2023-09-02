@@ -57,6 +57,7 @@ export class UserEntity {
   @Column('text', { array: true, default: [] })
   pendindFriendRequests: string[]; // List of friend requests received
 
+  // Block User Management
   @Column('text', { array: true, default: [] })
   blockedUser: string[]; // List of users I blocked
 

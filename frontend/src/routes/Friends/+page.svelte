@@ -31,13 +31,22 @@
 
 	//let users: string[];
 	let onlineUsers: string[] = [];
+	let pendingList: string[] = [];
+	let friendsList: string[] = [];
+	let sentRequestsList: string[] = [];
 	//let users: string[] = ["Henry", "john", "boby"];
 	let userToDisplay: string;
-	let emptyArray: boolean = false;
+
+	let onlineUserEmptyArray: boolean = false;
+	let pendingListEmptyArray: boolean = false;
+	let friendsListEmptyArray: boolean = false;
+	let sentRequestListEmptyArray: boolean = false;
 
 	onMount(async () => {
 		try {
 			const jwt = localStorage.getItem("jwt");
+
+			// Online Users
 			const onlineUsers_url = "http://localhost:3000/auth/onlineUsers";
 			const onlineUserResponse = await fetch(onlineUsers_url, {
 				method: "GET",
@@ -49,9 +58,66 @@
 			if (onlineUserResponse.ok) {
 				onlineUsers = await onlineUserResponse.json();
 				if (onlineUsers.length === 0) {
-					emptyArray = true;
+					onlineUserEmptyArray = true;
 				}
 				console.log("onlineUsers: ", onlineUsers);
+			}
+
+			// Pending List
+			const pendingListResponse = await fetch(
+				`http://localhost:3000/user/pendingList`,
+				{
+					method: "GET",
+					headers: {
+						Authorization: `Bearer ${jwt}`,
+						"Content-Type": "application/json",
+					},
+				}
+			);
+			if (pendingListResponse.ok) {
+				pendingList = await pendingListResponse.json();
+				if (pendingList.length === 0) {
+					pendingListEmptyArray = true;
+				}
+				console.log("pendingList: ", pendingList);
+			}
+
+			// Friends List
+			const friendsListResponse = await fetch(
+				`http://localhost:3000/user/friendsList`,
+				{
+					method: "GET",
+					headers: {
+						Authorization: `Bearer ${jwt}`,
+						"Content-Type": "application/json",
+					},
+				}
+			);
+			if (friendsListResponse.ok) {
+				friendsList = await friendsListResponse.json();
+				if (friendsList.length === 0) {
+					friendsListEmptyArray = true;
+				}
+				console.log("friendsList: ", friendsList);
+			}
+
+			// Sent Requests List
+			const sentRequestsListResponse = await fetch(
+				`http://localhost:3000/user/sentRequestsList`,
+				{
+					method: "GET",
+					headers: {
+						Authorization: `Bearer ${jwt}`,
+						"Content-Type": "application/json",
+					},
+				}
+			);
+			if (sentRequestsListResponse.ok) {
+				sentRequestsList = await sentRequestsListResponse.json();
+				if (sentRequestsList.length === 0) {
+					sentRequestListEmptyArray = true;
+				}
+				console.log("sendRequest List: ", sentRequestsList);
 			}
 		} catch (e) {
 			console.log("Friend OnMount PB");
@@ -64,13 +130,80 @@
 		openModal("OtherProfile");
 		goto("/Friends");
 	}
+
+	async function handleAcceptFriend(username: string) {
+		const jwt = localStorage.getItem("jwt");
+		const data = { username: username };
+		//console.log("-[ Add Friend ]- username sent: ", username);
+		const response = await fetch("http://localhost:3000/user/addFriend", {
+			method: "POST",
+			headers: {
+				Authorization: `Bearer ${jwt}`,
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ data }),
+		});
+		if (response.ok) {
+			console.log("response { OK } du [ Add Friend ]");
+		} else {
+			console.log("response { NOT OK } du [ Add Friend ]");
+		}
+		closeModal();
+		goto("/");
+	}
+
+	async function handleRefuseFriendRequest(username: string) {
+		const jwt = localStorage.getItem("jwt");
+		const data = { username: username };
+		const response = await fetch(
+			"http://localhost:3000/user/refuseFriendRequest",
+			{
+				method: "POST",
+				headers: {
+					Authorization: `Bearer ${jwt}`,
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ data }),
+			}
+		);
+		if (response.ok) {
+			console.log("response { OK } du [ Add Friend ]");
+		} else {
+			console.log("response { NOT OK } du [ Add Friend ]");
+		}
+		closeModal();
+		goto("/");
+	}
+
+	async function handleRemoveFriend(username: string) {
+		const jwt = localStorage.getItem("jwt");
+		const data = { username: username };
+		//console.log("-[ Remove Friend ]- username sent: ", username);
+		const response = await fetch(
+			"http://localhost:3000/user/removeFriend",
+			{
+				method: "POST",
+				headers: {
+					Authorization: `Bearer ${jwt}`,
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ data }),
+			}
+		);
+		if (response.ok) {
+			console.log("response { OK } du [ Remove Friend ]");
+		} else {
+			console.log("response { NOT OK } du [ Remove Friend ]");
+		}
+		closeModal();
+		goto("/");
+	}
 </script>
 
 <div>
 	<h1>👨🏻‍🌾 Find friends 🕵️‍♂️ 💂‍♀️</h1>
 
 	<div>
-		<h2>Online Users</h2>
 		{#if show_Modal}
 			<div>
 				<Modal>
@@ -84,7 +217,8 @@
 			</div>
 		{:else}
 			<div>
-				{#if emptyArray === true}
+				<h2>Online Users</h2>
+				{#if onlineUserEmptyArray === true}
 					<p>Sorry Bro no one is connected !</p>
 				{:else}
 					{#each onlineUsers as user}
@@ -96,6 +230,52 @@
 								}}>See Profil</button
 							>
 						</div>
+					{/each}
+				{/if}
+
+				<h2>Friends List</h2>
+				{#if friendsListEmptyArray === true}
+					<p>
+						Sorry Bro, you are a lone wolf ! Try to make friends,
+						request an online user !
+					</p>
+				{:else}
+					{#each friendsList as friendUser}
+						<div class="user-card" />
+						<p>{friendUser}</p>
+						<button
+							on:click={() => {
+								handleRemoveFriend(friendUser);
+							}}>Undo Friendship</button
+						>
+					{/each}
+				{/if}
+
+				<h2>Pending friend Request</h2>
+				{#if pendingListEmptyArray === true}
+					<p>Sorry Bro, no one wants to be your friend !</p>
+				{:else}
+					{#each pendingList as pendingUser}
+						<div class="user-card" />
+						<p>{pendingUser}</p>
+						<button
+							on:click={() => {
+								handleAcceptFriend(pendingUser);
+							}}>Accept</button
+						>
+						<button
+							on:click={() => {
+								handleRefuseFriendRequest(pendingUser);
+							}}>Refuse</button
+						>
+					{/each}
+				{/if}
+
+				{#if sentRequestListEmptyArray === false}
+					<h2>Waiting an answer from</h2>
+					{#each sentRequestsList as requestedUser}
+						<div class="user-card" />
+						<p>{requestedUser}</p>
 					{/each}
 				{/if}
 			</div>
@@ -120,5 +300,9 @@
 		margin-left: 10px;
 		background-color: blue;
 		color: aliceblue;
+	}
+	h2 {
+		color: red;
+		align-items: center;
 	}
 </style>

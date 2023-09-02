@@ -14,7 +14,7 @@ import { UserEntity } from 'src/users/orm/user.entity';
 
 @Injectable()
 export class AuthService {
-  private onlineUsersMap = new Map<string, UserEntity>();
+  private onlineUsersMap = new Map<number, UserEntity>();
   constructor(
     private httpService: HttpService,
     private userService: UserService,
@@ -24,23 +24,31 @@ export class AuthService {
 
   // * - - - [  OnLine Users - MAP< string, User > -  ] - - - *
   add_Online_User_inMap(jwt: string, user: UserEntity) {
-    this.onlineUsersMap.set(jwt, user);
+    const decoded = this.jwtService.decode(jwt) as { [key: string]: any };
+    console.log(" -[ add MAP ]-  Id: {", decoded.id, "}")
+    console.log(" -[ add MAP ]-  is user alreadyin Map: {", this.onlineUsersMap.has(decoded.id), "}")
+    if (!this.onlineUsersMap.has(decoded.id)) {
+      this.onlineUsersMap.set(decoded.id, user);
+    }
   }
   //operation sur le MAp effectue directement dans les fct d'Auth
 
   remove_Online_User_inMap(jwt: string) {
-    this.onlineUsersMap.delete(jwt);
+    const decoded = this.jwtService.decode(jwt) as { [key: string]: any };
+    this.onlineUsersMap.delete(decoded.id);
   }
 
-  get_Online_Usernames(login: string): string[] {
+  get_Online_Usernames(id: number): string[] {
+    console.log(" -[ GET Online ]- requette de user.id: {", id, "}")
     let usernames: string[] = [];
-    console.log("init mapInside: ", usernames)
+    console.log(" -[ GET Online ]- init mapInside: ", usernames)
     const mapSize = this.onlineUsersMap.size;
-    console.log("mapSize: ", mapSize)
+    console.log(" -[ GET Online ]- mapSize: ", mapSize)
     if (mapSize === 1) { return [] }
     else {
       this.onlineUsersMap.forEach((user) => {
-        if (user.login !== login) {
+        console.log(" -[ GET Online ]- Map -> username: [", user.userName, "]  id: {", user.id, "}")
+        if (user.id !== id) {
           usernames.push(user.userName);
         }
       });
@@ -144,7 +152,8 @@ export class AuthService {
         }
         //console.log("Creation du Token avec payload ... payload: ", jwt_payload);
         const jwt = this.asign_jtw_token(jwt_payload);
-        this.onlineUsersMap.set(await jwt, newCreatedUser);
+        this.add_Online_User_inMap(await jwt, newCreatedUser);
+        //this.onlineUsersMap.set(await jwt, newCreatedUser);
         return jwt;
         //return this.asign_jtw_token(jwt_payload);
       }

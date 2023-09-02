@@ -7,7 +7,10 @@
 
 	let login: string;
 	let pictureLink: string;
-	let friendStatus: string;
+
+	let isFriend: boolean;
+	let isPending: boolean;
+	let isRequested: boolean;
 
 	onMount(async () => {
 		try {
@@ -17,7 +20,6 @@
 			} else {
 				console.log("-[ OtherProfile ]-  - username: ", username);
 				const url = `http://localhost:3000/user/profileOther?username=${username}`;
-				//const url = `http://localhost:3000/user/profile`;
 				const response = await fetch(url, {
 					method: "GET",
 					headers: {
@@ -32,50 +34,13 @@
 					pictureLink = user.avatar;
 					username = user.username;
 
-					friendStatus = user.friendStatus;
+					isFriend = user.isMyFriend;
+					isPending = user.isInPending;
+					isRequested = user.isInSentRequest;
 				}
 			}
 		} catch (e) {}
 	});
-
-	// async function handleRequestFriend(friendUserName: string) {
-	// 	const jwt = localStorage.getItem("jwt");
-	// 	const data = { requestedUser: friendUserName };
-	// 	const response = await fetch(
-	// 		"http://localhost:3000/user/requestFriend",
-	// 		{
-	// 			method: "POST",
-	// 			headers: {
-	// 				Authorization: `Bearer ${jwt}`,
-	// 				"Content-Type": "application/json",
-	// 			},
-	// 			body: JSON.stringify({ data }),
-	// 		}
-	// 	);
-
-	// 	if (response.ok) {
-	// 		console.log("-[ Friend Request sent ]- ");
-	// 	}
-	// 	goto("/");
-	// }
-
-	// async function handleSendFriendRequest() {
-	// 	const jwt = localStorage.getItem("jwt");
-	// 	const data = { login: login };
-	// 	const response = await fetch("http://localhost:3000/auth/changeImage", {
-	// 		method: "POST",
-	// 		headers: {
-	// 			Authorization: `Bearer ${jwt}`,
-	// 			"Content-Type": "application/json",
-	// 		},
-	// 		body: JSON.stringify({ data }),
-	// 	});
-
-	// 	if (response.ok) {
-	// 		console.log("-[ Change Image ]- New Image bien Set");
-	// 	}
-	// 	goto("/");
-	// }
 
 	async function handleRefuseFriendRequest() {
 		const jwt = localStorage.getItem("jwt");
@@ -97,7 +62,7 @@
 			console.log("response { NOT OK } du [ Add Friend ]");
 		}
 		closeModal();
-		goto("/Friends");
+		goto("/");
 	}
 
 	async function handleSendFriendRequest() {
@@ -120,7 +85,7 @@
 			console.log("response { NOT OK } du [ Add Friend ]");
 		}
 		closeModal();
-		goto("/Friends");
+		goto("/");
 	}
 
 	async function handleAcceptFriend() {
@@ -141,7 +106,7 @@
 			console.log("response { NOT OK } du [ Add Friend ]");
 		}
 		closeModal();
-		goto("/Friends");
+		goto("/");
 	}
 
 	async function handleRemoveFriend() {
@@ -165,7 +130,7 @@
 			console.log("response { NOT OK } du [ Remove Friend ]");
 		}
 		closeModal();
-		goto("/Friends");
+		goto("/");
 	}
 </script>
 
@@ -178,26 +143,30 @@
 		<p>Login : {login}</p>
 		<p>Name : {username}</p>
 	</div>
-	<button
-		on:click={() => {
-			handleAcceptFriend();
-		}}>accept Friend</button
-	>
-	<button
-		on:click={() => {
-			handleRemoveFriend();
-		}}>undo Friendship</button
-	>
-	<button
-		on:click={() => {
-			handleSendFriendRequest();
-		}}>Send friend Request</button
-	>
-	<button
-		on:click={() => {
-			handleRefuseFriendRequest();
-		}}>Refuse Friendship</button
-	>
+	{#if isFriend === true}
+		<button
+			on:click={() => {
+				handleRemoveFriend();
+			}}>undo Friendship</button
+		>
+	{:else if isPending === true}
+		<button
+			on:click={() => {
+				handleAcceptFriend();
+			}}>accept Friend</button
+		>
+		<button
+			on:click={() => {
+				handleRefuseFriendRequest();
+			}}>Refuse Friendship</button
+		>
+	{:else if isRequested === false}
+		<button
+			on:click={() => {
+				handleSendFriendRequest();
+			}}>Send friend Request</button
+		>
+	{/if}
 </div>
 
 <!-- Faire affichage de differents buttons en fonction du friend status -> sendFriendRequest,

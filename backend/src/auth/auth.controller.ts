@@ -64,32 +64,7 @@ export class AuthController {
 
 
 
-    // /////////////////////////////////   [ L o c a l   A u t h ]      //////////////////////////////////
-    // // --> [  ** Register **  'Local' new user - Non 42 User -  ] <--
 
-    // (@Req() request: Request) => Notation exacte used NestJsDocs
-    @HttpCode(HttpStatus.OK)
-    @Post('register')
-    async register(@Body() bodyRequest, @Response() res) {
-        const jwt = await this.authService.registerNewUser(bodyRequest);
-        let frontendUrl = `http://localhost:5173`;
-        if (jwt !== null) {
-            const frontendUrl = `http://localhost:5173/?jwt=${jwt}`;
-        }
-        res.redirect(frontendUrl);
-    }
-
-    @HttpCode(HttpStatus.OK)
-    @Post('login')
-    async login(@Body() bodyRequest, @Response() res) {
-        let frontendUrl: string = `http://localhost:5173`;
-        const jwt = await this.authService.login(bodyRequest);
-        if (jwt !== null) {
-            frontendUrl = `http://localhost:5173/?jwt=${jwt}`;
-        }
-        res.redirect(frontendUrl);
-    }
-    // /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -244,10 +219,41 @@ export class AuthController {
         const jwt = this.jwtService.decode(jwtToken) as { [key: string]: any };
 
         let onlineUserlist: string[];
-        onlineUserlist = this.authService.get_Online_Usernames(jwt.login);
-        // const onlineUserlist: string[] = this.authService.get_All_Online_UserNames_inMap();
-        console.log("OnlineUser list: ", onlineUserlist);
+        onlineUserlist = this.authService.get_Online_Usernames(jwt.id);
+        console.log("OnlineUser list Sent: ", onlineUserlist);
         res.json(onlineUserlist);
     }
+
+
+
+
+
+
+    // /////////////////////////////////   [ L o c a l   A u t h ]      //////////////////////////////////
+    // // --> [  ** Register **  'Local' new user - Non 42 User -  ] <--
+
+    // (@Req() request: Request) => Notation exacte used NestJsDocs
+    @HttpCode(HttpStatus.OK)
+    @Post('register')
+    async register(@Body() bodyRequest, @Response() res) {
+        const jwt = await this.authService.registerNewUser(bodyRequest);
+        let frontendUrl = `http://localhost:5173`;
+        if (jwt !== null) {
+            const frontendUrl = `http://localhost:5173/?jwt=${jwt}`;
+        }
+        res.redirect(frontendUrl);
+    }
+
+    @HttpCode(HttpStatus.OK)
+    @Post('login')
+    async login(@Body() bodyRequest, @Response() res) {
+        let frontendUrl: string = `http://localhost:5173`;
+        const jwt = await this.authService.login(bodyRequest);
+        if (jwt !== null) {
+            frontendUrl = `http://localhost:5173/?jwt=${jwt}`;
+        }
+        res.redirect(frontendUrl);
+    }
+    // /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 }
