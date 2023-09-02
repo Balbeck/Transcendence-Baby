@@ -38,10 +38,11 @@ export class AuthService {
     this.onlineUsersMap.delete(decoded.id);
   }
 
-  get_Online_Usernames(id: number): string[] {
+  async get_Online_Usernames(id: number) {
     console.log(" -[ GET Online ]- requette de user.id: {", id, "}")
-    let usernames: string[] = [];
-    console.log(" -[ GET Online ]- init mapInside: ", usernames)
+    let loginList: string[] = [];
+    let usernameList: string[] = [];
+    //console.log(" -[ GET Online ]- init mapInside: ", loginList)
     const mapSize = this.onlineUsersMap.size;
     console.log(" -[ GET Online ]- mapSize: ", mapSize)
     if (mapSize === 1) { return [] }
@@ -49,25 +50,19 @@ export class AuthService {
       this.onlineUsersMap.forEach((user) => {
         console.log(" -[ GET Online ]- Map -> username: [", user.userName, "]  id: {", user.id, "}")
         if (user.id !== id) {
-          usernames.push(user.userName);
+          loginList.push(user.login);
         }
       });
-      return usernames;
+      for (const userLogin of loginList) {
+        const user = await this.userService.find_user_by_login(userLogin);
+        usernameList.push(user.userName);
+      }
+      return usernameList;
     }
   }
-  // // Fct Equivalente
-  // get_All_Online_UserNames_inMap(): string[] {
-  //   const mapSize = this.onlineUsersMap.size;
-  //   console.log("mapSize: ", mapSize)
-  //   if (mapSize === 1) { return [null] }
-  //   return Array.from(this.onlineUsersMap.values(), user => user.userName);
-  // }
-
-
-
-
-
   //////////////////////////////////////////////////////////////////
+
+
 
   // * - - - [  Authentification  { 42 } User  ] - - - *
   async authentification_42(req: Request) {

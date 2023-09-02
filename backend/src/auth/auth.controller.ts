@@ -219,7 +219,7 @@ export class AuthController {
         const jwt = this.jwtService.decode(jwtToken) as { [key: string]: any };
 
         let onlineUserlist: string[];
-        onlineUserlist = this.authService.get_Online_Usernames(jwt.id);
+        onlineUserlist = await this.authService.get_Online_Usernames(jwt.id);
         console.log("OnlineUser list Sent: ", onlineUserlist);
         res.json(onlineUserlist);
     }

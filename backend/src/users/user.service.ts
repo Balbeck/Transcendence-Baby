@@ -132,13 +132,13 @@ export class UserService {
 		}
 
 		if (!requester.friendRequestsSent.includes(receiver.login)) {
-			requester.friendRequestsSent.push(receiver.userName);
+			requester.friendRequestsSent.push(receiver.login);
 			console.log("4  -[ RequestFriend ]- Ajout de [", receiver.login, "] a la friendRequestSent list de [", requester.login, "]");
 			await this.userRepository.save(requester);
 		}
 
 		if (!receiver.pendindFriendRequests.includes(requester.login)) {
-			receiver.pendindFriendRequests.push(requester.userName);
+			receiver.pendindFriendRequests.push(requester.login);
 			console.log("4  -[ RequestFriend ]- Ajout de [", requester.login, "] a la pending list de [", receiver.login, "]");
 			await this.userRepository.save(receiver);
 		}
@@ -163,7 +163,7 @@ export class UserService {
 
 		//console.log("3  -[ Friends ]- User 1... > 4 ?");
 		if (!user1.friends.includes(user2.login)) {
-			user1.friends.push(friendUsername);
+			user1.friends.push(user2.login);
 			console.log("4  -[ addFriends ]- Ajout de [", user2.login, "] a la friend list de [", user1.login, "]");
 			await this.userRepository.save(user1);
 		}
@@ -171,7 +171,7 @@ export class UserService {
 		user1 = await this.find_user_by_login(login);
 		user2 = await this.find_user_by_userName(friendUsername);
 		if (!user2.friends.includes(user1.login)) {
-			user2.friends.push(user1.userName);
+			user2.friends.push(user1.login);
 			await this.userRepository.save(user2);
 		}
 
@@ -194,14 +194,14 @@ export class UserService {
 			throw new BadRequestException('User not found');
 		}
 		// clear la pending list de celui qui receive/accepte
-		const pendingFriendIndex = accepter.pendindFriendRequests.indexOf(requester.userName);
+		const pendingFriendIndex = accepter.pendindFriendRequests.indexOf(requester.login);
 		if (pendingFriendIndex !== -1) {
 			accepter.pendindFriendRequests.splice(pendingFriendIndex, 1);
 			await this.userRepository.save(accepter);
 		}
 
 		// clear la SendRequest list de celui qui send/request
-		const senderFriendIndex = requester.friendRequestsSent.indexOf(accepter.userName);
+		const senderFriendIndex = requester.friendRequestsSent.indexOf(accepter.login);
 		if (senderFriendIndex !== -1) {
 			requester.friendRequestsSent.splice(senderFriendIndex, 1);
 			await this.userRepository.save(requester);
@@ -221,7 +221,7 @@ export class UserService {
 			throw new BadRequestException('User not found');
 		}
 
-		const friendIndex = user1.friends.indexOf(friendUsername);
+		const friendIndex = user1.friends.indexOf(user2.login);
 		if (friendIndex !== -1) {
 			user1.friends.splice(friendIndex, 1);
 			await this.userRepository.save(user1);
@@ -236,23 +236,51 @@ export class UserService {
 	async getPendingList(id: number) {
 		const user = await this.find_user_by_id(id);
 		console.log(" -[ Get Pending ]- userRecup: [", user.userName, "] -> PendingList: ", user.pendindFriendRequests);
-		const pendingList: string[] = user.pendindFriendRequests;
-		return pendingList;
+		const loginPendingList: string[] = user.pendindFriendRequests;
+		// tranformation des login en usernames
+		let usernamePendingList: string[] = [];
+		for (const login of loginPendingList) {
+			const user = await this.find_user_by_login(login);
+			const username: string = user.userName;
+			usernamePendingList.push(username);
+		}
+		return usernamePendingList;
 	}
 
 	async getFriendsList(id: number) {
 		const user = await this.find_user_by_id(id);
 		console.log(" -[ Get Friends ]- userRecup: [", user.userName, "] -> friendsList: ", user.friends);
-		const friendsList: string[] = user.friends;
-		return friendsList;
+		const loginFriendsList: string[] = user.friends;
+		// tranformation des login en usernames
+		let usernameFriendsList: string[] = [];
+		for (const login of loginFriendsList) {
+			const user = await this.find_user_by_login(login);
+			const username: string = user.userName;
+			usernameFriendsList.push(username);
+		}
+		return usernameFriendsList;
 	}
 
 	async getSentRequestsList(id: number) {
 		const user = await this.find_user_by_id(id);
 		console.log(" -[ Get SendRequests ]- user: [", user.userName, "] -> RequestsList: ", user.friendRequestsSent);
-		const sentRequestsList: string[] = user.friendRequestsSent;
-		return sentRequestsList;
+		const loginSentRequestsList: string[] = user.friendRequestsSent;
+		// tranformation des login en usernames
+		let usernameSentRequestsList: string[] = [];
+		for (const login of loginSentRequestsList) {
+			const user = await this.find_user_by_login(login);
+			const username: string = user.userName;
+			usernameSentRequestsList.push(username);
+		}
+		return usernameSentRequestsList;
 	}
+
+
+
+	///////////////////////////////////////////////////////////////////////////
+	//																		//
+	//																	   //
+	////////////////////////////////////////////////////////////////////////
 
 
 

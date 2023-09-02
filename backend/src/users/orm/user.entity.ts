@@ -64,10 +64,10 @@ export class UserEntity {
   @Column('text', { array: true, default: [] })
   blockedBy: string[]; // List of users who blocked me
 
+  // Game
+  @Column({ nullable: false, default: 1 })
+  rank: number;
 
-  // // 'online' 'offline' 'inGame'
-  // @Column({ default: "online" })
-  // liveStatus: string
 
   @BeforeInsert()
   emailToLowerCases() {
