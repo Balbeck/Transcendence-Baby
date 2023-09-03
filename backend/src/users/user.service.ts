@@ -1,22 +1,15 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, FindOneOptions } from 'typeorm';
-// import { FriendshipEntity } from './orm/friendship.entity';
+import { Repository } from 'typeorm';
 import { UserEntity } from './orm/user.entity';
-import { RefreshTokenStrategy } from 'src/auth/strategies/refreshToken.strategy';
 import * as otplib from 'otplib';
-import * as argon2 from 'argon2';
 import * as qrcode from 'qrcode';
-import { toDataURL } from "qrcode";
-// import { bcrypt } from '';
 
 @Injectable()
 export class UserService {
 	constructor(
 		@InjectRepository(UserEntity)
 		private userRepository: Repository<UserEntity>,
-		// @InjectRepository(FriendshipEntity)
-		// private friendshipRepository: Repository<FriendshipEntity>,
 	) { }
 
 	async find_all_users(): Promise<UserEntity[]> {
@@ -169,7 +162,7 @@ export class UserService {
 				.createQueryBuilder()
 				.update()
 				.set({ friends: user1.friends }) // Mettez à jour le champ friends avec la nouvelle liste d'amis
-				.where("id = :id", { id: user1.id }) // Assurez-vous de cibler le bon utilisateur
+				.where("id = :id", { id: user1.id })
 				.execute();
 			//await this.userRepository.save(user1);
 		}
@@ -182,7 +175,7 @@ export class UserService {
 				.createQueryBuilder()
 				.update()
 				.set({ friends: user2.friends }) // Mettez à jour le champ friends avec la nouvelle liste d'amis
-				.where("id = :id", { id: user2.id }) // Assurez-vous de cibler le bon utilisateur
+				.where("id = :id", { id: user2.id })
 				.execute();
 			//await this.userRepository.save(user2);
 		}
@@ -193,7 +186,6 @@ export class UserService {
 		const user2test = await this.find_user_by_login(user2.login);
 		console.log("7  -[ addFriends ]- ", user1test.login, "  friendList: ", user1test.friends);
 		console.log("8  -[ addFriends ]- ", user2test.login, "  friendList: ", user2test.friends);
-		//console.log("8  -[ Friends ]- User2 friendList: ", user2test.friends);
 		/////////////////////
 	}
 

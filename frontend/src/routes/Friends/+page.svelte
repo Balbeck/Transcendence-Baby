@@ -6,8 +6,8 @@
 	import Modal from "$lib/modals/Modal.svelte";
 	import { openModal, selectedPage } from "$lib/store/ModalValues";
 	import { closeModal } from "$lib/store/ModalValues";
-	// Est ce que Display une Modal  -[ boolean ]-
 	import { showModal } from "$lib/store/ModalValues";
+	import { authentificated } from "$lib/store/store";
 	import OtherProfile from "$lib/OtherProfile/OtherProfile.svelte";
 	let show_Modal: boolean;
 	showModal.subscribe((a: boolean) => {
@@ -80,6 +80,10 @@
 					pendingListEmptyArray = true;
 				}
 				console.log("pendingList: ", pendingList);
+			} else {
+				localStorage.clear();
+				authentificated.set(false);
+				goto("/");
 			}
 
 			// Friends List
@@ -227,7 +231,7 @@
 							<button
 								on:click={() => {
 									handleSeeProfil(user);
-								}}>See Profil</button
+								}}>See Profile</button
 							>
 						</div>
 					{/each}
@@ -245,6 +249,11 @@
 							<p>{friendUser}</p>
 							<button
 								on:click={() => {
+									handleSeeProfil(friendUser);
+								}}>See Profile</button
+							>
+							<button
+								on:click={() => {
 									handleRemoveFriend(friendUser);
 								}}>Undo Friendship</button
 							>
@@ -259,6 +268,11 @@
 					{#each pendingList as pendingUser}
 						<div class="user-card">
 							<p>{pendingUser}</p>
+							<button
+								on:click={() => {
+									handleSeeProfil(pendingUser);
+								}}>See Profile</button
+							>
 							<button
 								on:click={() => {
 									handleAcceptFriend(pendingUser);
@@ -278,6 +292,11 @@
 					{#each sentRequestsList as requestedUser}
 						<div class="user-card">
 							<p>{requestedUser}</p>
+							<button
+								on:click={() => {
+									handleSeeProfil(requestedUser);
+								}}>See Profile</button
+							>
 						</div>
 					{/each}
 				{/if}

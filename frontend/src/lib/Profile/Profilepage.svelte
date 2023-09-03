@@ -19,6 +19,7 @@
 	});
 	///////////////////////////////////////////////////
 
+	import { authentificated } from "$lib/store/store";
 	import { googleAuth } from "$lib/store/store";
 	let Google2fa: boolean = false;
 
@@ -64,6 +65,10 @@
 
 					googleAuth.set(user.fa2);
 					console.log("2fa Value from user: [ ", user.fa2, " ]");
+				} else {
+					localStorage.clear();
+					authentificated.set(false);
+					goto("/");
 				}
 				//let user = await response();
 			}

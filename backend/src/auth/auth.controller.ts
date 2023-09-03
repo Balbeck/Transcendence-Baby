@@ -4,6 +4,7 @@ import { AuthService } from "./auth.service";
 import { AuthGuard } from './guards/auth.guard';
 import { UserService } from "src/users/user.service";
 import { JwtService } from "@nestjs/jwt";
+import { JwtAuthService } from './jwt/jwt.service';
 import { ConfigService } from "@nestjs/config";
 import * as dotenv from 'dotenv';
 dotenv.config();
@@ -18,6 +19,7 @@ export class AuthController {
         private userService: UserService,
         private jwtService: JwtService,
         private configService: ConfigService,
+        private jwtAuthService: JwtAuthService,
     ) { }
 
 
@@ -34,22 +36,30 @@ export class AuthController {
     //--> [ ** Etape 2 **  -> Get le retour de 42Api pour extraire le 'code', verif Auth make requests a 42Api ] <--
     @Get('42api-return')
     async authentificate_42_User(@Request() req, @Response() res) {
-        const jwt = await this.authService.authentification_42(req);
-        //  console.log("le jwt Controller:", jwt);
-        const jwtdecoded = await this.jwtService.decode(jwt) as { login: string };;
-        //console.log("le jwtdecoded :", jwtdecoded);
-        const user = await this.userService.find_user_by_login(jwtdecoded.login);
-        if (user.fa2 === true) {
-            console.log("-[ Auth 42 ]- 2fa user [ ", user.login, " ] { True }");
-            const login: string = user.login;
-            const frontUrl = `http://localhost:5173/?login=${login}`;
-            res.redirect(frontUrl);
+        try {
+            const jwt = await this.authService.authentification_42(req);
+            //  console.log("le jwt Controller:", jwt);
+            if (!jwt) {
+                throw new UnauthorizedException();
+            }
+            const jwtdecoded = await this.jwtService.decode(jwt) as { login: string };;
+            //console.log("le jwtdecoded :", jwtdecoded);
+            const user = await this.userService.find_user_by_login(jwtdecoded.login);
+            if (user.fa2 === true) {
+                console.log("-[ Auth 42 ]- 2fa user [ ", user.login, " ] { True }");
+                const login: string = user.login;
+                const frontUrl = `http://localhost:5173/?login=${login}`;
+                res.redirect(frontUrl);
+            }
+            else {
+                console.log("-[ Auth 42 ]- 2fa user [ ", user.login, " ] { False }");
+                // redirection vers le front avec le Jwt en Url
+                const frontendUrl = `http://localhost:5173/?jwt=${jwt}`;
+                res.redirect(frontendUrl);
+            }
         }
-        else {
-            console.log("-[ Auth 42 ]- 2fa user [ ", user.login, " ] { False }");
-            // redirection vers le front avec le Jwt en Url
-            const frontendUrl = `http://localhost:5173/?jwt=${jwt}`;
-            res.redirect(frontendUrl);
+        catch {
+            throw new UnauthorizedException();
         }
     }
 
@@ -165,7 +175,8 @@ export class AuthController {
                 "login": newUser.login,
                 "username": newUser.userName
             }
-            const newJwt = await this.authService.asign_jtw_token(payload);;
+            //const newJwt = await this.authService.asign_jtw_token(payload);;
+            const newJwt = await this.jwtAuthService.createToken(payload);
             res.header('Authorization', `Bearer ${newJwt}`);
             const frontendUrl = `http://localhost:5173/?jwt=${newJwt}`;
             res.redirect(frontendUrl);
@@ -235,31 +246,31 @@ export class AuthController {
 
 
 
-    // /////////////////////////////////   [ L o c a l   A u t h ]      //////////////////////////////////
-    // // --> [  ** Register **  'Local' new user - Non 42 User -  ] <--
+    // // /////////////////////////////////   [ L o c a l   A u t h ]      //////////////////////////////////
+    // // // --> [  ** Register **  'Local' new user - Non 42 User -  ] <--
 
-    // (@Req() request: Request) => Notation exacte used NestJsDocs
-    @HttpCode(HttpStatus.OK)
-    @Post('register')
-    async register(@Body() bodyRequest, @Response() res) {
-        const jwt = await this.authService.registerNewUser(bodyRequest);
-        let frontendUrl = `http://localhost:5173`;
-        if (jwt !== null) {
-            const frontendUrl = `http://localhost:5173/?jwt=${jwt}`;
-        }
-        res.redirect(frontendUrl);
-    }
+    // // (@Req() request: Request) => Notation exacte used NestJsDocs
+    // @HttpCode(HttpStatus.OK)
+    // @Post('register')
+    // async register(@Body() bodyRequest, @Response() res) {
+    //     const jwt = await this.authService.registerNewUser(bodyRequest);
+    //     let frontendUrl = `http://localhost:5173`;
+    //     if (jwt !== null) {
+    //         const frontendUrl = `http://localhost:5173/?jwt=${jwt}`;
+    //     }
+    //     res.redirect(frontendUrl);
+    // }
 
-    @HttpCode(HttpStatus.OK)
-    @Post('login')
-    async login(@Body() bodyRequest, @Response() res) {
-        let frontendUrl: string = `http://localhost:5173`;
-        const jwt = await this.authService.login(bodyRequest);
-        if (jwt !== null) {
-            frontendUrl = `http://localhost:5173/?jwt=${jwt}`;
-        }
-        res.redirect(frontendUrl);
-    }
-    // /////////////////////////////////////////////////////////////////////////////////////////////////////
+    // @HttpCode(HttpStatus.OK)
+    // @Post('login')
+    // async login(@Body() bodyRequest, @Response() res) {
+    //     let frontendUrl: string = `http://localhost:5173`;
+    //     const jwt = await this.authService.login(bodyRequest);
+    //     if (jwt !== null) {
+    //         frontendUrl = `http://localhost:5173/?jwt=${jwt}`;
+    //     }
+    //     res.redirect(frontendUrl);
+    // }
+    // // /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 }

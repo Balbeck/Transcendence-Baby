@@ -1,19 +1,27 @@
 import {
 	CanActivate,
 	ExecutionContext,
+	Inject,
 	Injectable,
 	UnauthorizedException,
+	forwardRef,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { jwtSecret } from '../jwtSecret';
 import { Request } from 'express';
 import { UserService } from 'src/users/user.service';
+import { AuthService } from '../auth.service';
+import { JwtAuthService } from '../jwt/jwt.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
 	constructor(
 		private jwtService: JwtService,
-		private userService: UserService
+		private userService: UserService,
+
+		// private jwtAuthService: JwtAuthService,
+		// pour resoudre probleme de dependance 
+		@Inject(forwardRef(() => JwtAuthService))
+		private jwtAuthService: JwtAuthService,
 	) { }
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -28,20 +36,41 @@ export class AuthGuard implements CanActivate {
 		try {
 			console.log("[ AuthGuard ] - Token present avec la request");
 			console.log("[ AuthGuard ] - Token: ", token);
-			//const res = { data: (this.jwtService.decode(token)) };
 			const res = this.jwtService.decode(token) as { [key: string]: any };
 			console.log("[ AuthGuard ] - res.username: ", res.username);
-			// if (!res.username) { throw new UnauthorizedException(); }
-			// let is_user_in_db = await this.userService.find_user_by_userName(res.username);
-			if (!res.id) { throw new UnauthorizedException(); }
+			if (!res.id) {
+				throw new UnauthorizedException();
+			}
+
+			// Verif si present dans la DB
 			let is_user_in_db = await this.userService.find_user_by_id(res.id);
 			if (is_user_in_db) {
 				console.log("[ AuthGuard ] - User is in Db: { ", is_user_in_db.userName, " }");
 			}
 			else {
 				console.log("[ AuthGuard ] - User **NOT** in Db: { ", res.username, " }");
-				throw new UnauthorizedException;
+				throw new UnauthorizedException();
 			}
+
+			// // Verif supplementaire:  si le User est Online
+			// if (this.authService.isUserOnline(is_user_in_db.login)) {
+			// 	console.log("[ AuthGuard ] - User { ", is_user_in_db.userName, " } is ONLINE");
+			// }
+			// else {
+			// 	console.log("[ AuthGuard ] - User { ", is_user_in_db.userName, " } is OFFLINE --[REFUSE]--");
+			// 	throw new UnauthorizedException();
+			// }
+
+			// Verif Validity du Jwt
+			try {
+				// Si validity expired jwt throw exception ELSE return le payload decoded 
+				const payload = await this.jwtAuthService.verifyToken(token);
+				console.error('[ AuthGuard ] - { Valid } JwT ');
+			} catch (error) {
+				console.error('[ AuthGuard ] - X { INVALID } X JwT :', error.message);
+				throw new UnauthorizedException();
+			}
+
 			return true;
 		} catch {
 			throw new UnauthorizedException();

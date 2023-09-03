@@ -1,7 +1,8 @@
 import { Controller, Query, Body, Get, Header, HttpCode, HttpStatus, Request, Response, UseGuards, UnauthorizedException, Put, Delete, Param, Patch, Post } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserEntity } from './orm/user.entity';
-import { AuthGuard } from '@nestjs/passport';
+//import { AuthGuard } from '@nestjs/passport';
+import { AuthGuard } from '../auth/guards/auth.guard';
 import { JwtService } from '@nestjs/jwt';
 
 @Controller('user')
@@ -12,7 +13,7 @@ export class UserController {
 	) { }
 
 	@HttpCode(HttpStatus.OK)
-	//@UseGuards(AuthGuard)
+	@UseGuards(AuthGuard)
 	@Get('profile')
 	async profile(@Request() req, @Response() res) {
 		try {
@@ -36,6 +37,7 @@ export class UserController {
 	}
 
 	@HttpCode(HttpStatus.OK)
+	@UseGuards(AuthGuard)
 	@Get('profileOther')
 	async profileOther(@Query('username') username: string, @Request() req, @Response() res) {
 		console.log(" -[ ProfileOther User.Ctrl ]- QueryParam: ", username);
@@ -66,6 +68,7 @@ export class UserController {
 	}
 
 	@HttpCode(HttpStatus.OK)
+	@UseGuards(AuthGuard)
 	@Post('sendFriendRequest')
 	async sendFriendRequest(@Request() req) {
 		console.log(" -[ requestFriends  / UsrCtrl ]- ");
@@ -83,6 +86,7 @@ export class UserController {
 	}
 
 	@HttpCode(HttpStatus.OK)
+	@UseGuards(AuthGuard)
 	@Post('refuseFriendRequest')
 	async refuseFriendRequest(@Request() req) {
 		console.log(" -[ refuse Friends  / UsrCtrl ]- ");
@@ -100,6 +104,7 @@ export class UserController {
 	}
 
 	@HttpCode(HttpStatus.OK)
+	@UseGuards(AuthGuard)
 	@Post('addFriend')
 	async addNewFriendship(@Request() req) {
 		console.log(" -[ addFriends  / UsrCtrl ]- ");
@@ -124,6 +129,7 @@ export class UserController {
 	}
 
 	@HttpCode(HttpStatus.OK)
+	@UseGuards(AuthGuard)
 	@Post('removeFriend')
 	async removeFriendship(@Request() req) {
 		console.log(" -[ RemoveFriends  / UsrCtrl ]- ");
@@ -141,6 +147,7 @@ export class UserController {
 
 
 	@HttpCode(HttpStatus.OK)
+	@UseGuards(AuthGuard)
 	@Get('pendingList')
 	async getPendingList(@Request() req, @Response() res) {
 		console.log(" -[ PendingList  / UsrCtrl ]- ");
@@ -155,6 +162,7 @@ export class UserController {
 
 
 	@HttpCode(HttpStatus.OK)
+	@UseGuards(AuthGuard)
 	@Get('friendsList')
 	async getfriendList(@Request() req, @Response() res) {
 		console.log(" -[ FriendList  / UsrCtrl ]- ");
@@ -168,6 +176,7 @@ export class UserController {
 	}
 
 	@HttpCode(HttpStatus.OK)
+	@UseGuards(AuthGuard)
 	@Get('sentRequestsList')
 	async getRequestsList(@Request() req, @Response() res) {
 		console.log(" -[ RequestsList  / UsrCtrl ]- ");
@@ -183,6 +192,7 @@ export class UserController {
 
 
 	@HttpCode(HttpStatus.OK)
+	@UseGuards(AuthGuard)
 	@Get('/all')
 	find_all_users(): Promise<UserEntity[]> {
 		return this.userService.find_all_users();

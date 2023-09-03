@@ -7,12 +7,12 @@
 		// Code a exécuter lorsque SPA est chargée
 	});
 
-	function ConnectChchao() {
-		goto("http://localhost:3000/loginChchao");
-	}
-	function ConnectBalbecke() {
-		goto("http://localhost:3000/loginBalbecke");
-	}
+	// function ConnectChchao() {
+	// 	goto("http://localhost:3000/loginChchao");
+	// }
+	// function ConnectBalbecke() {
+	// 	goto("http://localhost:3000/loginBalbecke");
+	// }
 </script>
 
 <div>
@@ -21,18 +21,18 @@
 	<!-- <h1 class="42">4 2</h1> -->
 	<h2>Transcendence</h2>
 	<LoginButton />
-	<div class="testUsers">
+	<!-- <div class="testUsers">
 		<span class="buttonUserTest">
 			<button on:click={ConnectChchao}>User 1 🤵🏻‍♂️ </button>
 		</span>
 		<span class="buttonUserTest">
 			<button on:click={ConnectBalbecke}>User 2 🕵️‍♂️ </button>
 		</span>
-	</div>
+	</div> -->
 </div>
 
 <style>
-	.testUsers {
+	/* .testUsers {
 		flex-direction: row;
 		align-items: center;
 		margin-top: 3%;
@@ -44,7 +44,7 @@
 		border-radius: 12%;
 		border-color: blue;
 		border-width: 1px;
-	}
+	} */
 	img {
 		max-width: 21%;
 	}

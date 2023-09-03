@@ -1,4 +1,4 @@
-export class AuthDto {
-	username: string;
-	hash: string;
-}
+// export class AuthDto {
+// 	username: string;
+// 	hash: string;
+// }
