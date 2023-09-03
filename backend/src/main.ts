@@ -12,17 +12,17 @@ async function bootstrap() {
   // app.use(bodyParser.json());
   app.enableCors({
     origin: '*',
-    methods: 'GET,POST,PUT',
+    methods: 'GET,POST',
     credentials: true,
     allowedHeaders: 'Content-Type,Authorization',
   });
-  app.use(
-    session({
-      secret: 'votre-secret', // Changez cette valeur par une chaîne de caractères secrète
-      resave: false,
-      saveUninitialized: true,
-    }),
-  );
+  // app.use(
+  //   session({
+  //     secret: 'votre-secret', // Changez cette valeur par une chaîne de caractères secrète
+  //     resave: false,
+  //     saveUninitialized: true,
+  //   }),
+  // );
   // app.use(cors({
   //   origin: 'http://localhost:5173', // Remplacez l'URL par l'URL de votre frontend
   //   credentials: true, // Si vous utilisez des cookies ou des entêtes d'autorisation, assurez-vous d'inclure cette option

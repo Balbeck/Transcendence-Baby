@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, FindOneOptions } from 'typeorm';
-import { FriendshipEntity } from './orm/friendship.entity';
+// import { FriendshipEntity } from './orm/friendship.entity';
 import { UserEntity } from './orm/user.entity';
 import { RefreshTokenStrategy } from 'src/auth/strategies/refreshToken.strategy';
 import * as otplib from 'otplib';
@@ -15,8 +15,8 @@ export class UserService {
 	constructor(
 		@InjectRepository(UserEntity)
 		private userRepository: Repository<UserEntity>,
-		@InjectRepository(FriendshipEntity)
-		private friendshipRepository: Repository<FriendshipEntity>,
+		// @InjectRepository(FriendshipEntity)
+		// private friendshipRepository: Repository<FriendshipEntity>,
 	) { }
 
 	async find_all_users(): Promise<UserEntity[]> {
@@ -165,14 +165,26 @@ export class UserService {
 		if (!user1.friends.includes(user2.login)) {
 			user1.friends.push(user2.login);
 			console.log("4  -[ addFriends ]- Ajout de [", user2.login, "] a la friend list de [", user1.login, "]");
-			await this.userRepository.save(user1);
+			await this.userRepository
+				.createQueryBuilder()
+				.update()
+				.set({ friends: user1.friends }) // Mettez à jour le champ friends avec la nouvelle liste d'amis
+				.where("id = :id", { id: user1.id }) // Assurez-vous de cibler le bon utilisateur
+				.execute();
+			//await this.userRepository.save(user1);
 		}
 
 		user1 = await this.find_user_by_login(login);
 		user2 = await this.find_user_by_userName(friendUsername);
 		if (!user2.friends.includes(user1.login)) {
 			user2.friends.push(user1.login);
-			await this.userRepository.save(user2);
+			await this.userRepository
+				.createQueryBuilder()
+				.update()
+				.set({ friends: user2.friends }) // Mettez à jour le champ friends avec la nouvelle liste d'amis
+				.where("id = :id", { id: user2.id }) // Assurez-vous de cibler le bon utilisateur
+				.execute();
+			//await this.userRepository.save(user2);
 		}
 
 

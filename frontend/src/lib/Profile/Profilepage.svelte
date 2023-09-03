@@ -33,6 +33,9 @@
 	$: newImg = "";
 	$: username = "";
 
+	let indication_username: string = "";
+	let indication_avatar: string = "";
+
 	onMount(async () => {
 		try {
 			const jwt = localStorage.getItem("jwt");
@@ -112,42 +115,6 @@
 		}
 		goto("/");
 	}
-
-	// async function Enable_2fa() {
-	// 	const jwt = localStorage.getItem("jwt");
-	// 	const data = { login: login, fa2: false };
-	// 	const response = await fetch("http://localhost:3000/auth/enable_2fa", {
-	// 		method: "POST",
-	// 		headers: {
-	// 			Authorization: `Bearer ${jwt}`,
-	// 			"Content-Type": "application/json",
-	// 		},
-	// 		body: JSON.stringify({ data }),
-	// 	});
-
-	// 	if (response.ok) {
-	// 		console.log("-[ Enable 2fa ]- OK");
-	// 	}
-	// 	goto("/");
-	// }
-
-	// async function Disable_2fa() {
-	// 	const jwt = localStorage.getItem("jwt");
-	// 	const data = { login: login, fa2: false };
-	// 	const response = await fetch("http://localhost:3000/auth/disable_2fa", {
-	// 		method: "POST",
-	// 		headers: {
-	// 			Authorization: `Bearer ${jwt}`,
-	// 			"Content-Type": "application/json",
-	// 		},
-	// 		body: JSON.stringify({ data }),
-	// 	});
-
-	// 	if (response.ok) {
-	// 		console.log("-[ Disable 2fa ]- OK ");
-	// 	}
-	// 	goto("/");
-	// }
 </script>
 
 {#if show_Modal}
@@ -184,21 +151,63 @@
 			<p>Name : {username}</p>
 			<p>
 				Change username
-				<input type="text" bind:value={newUserName} />
-				<button on:click={handleChangeName}>Change</button>
+				<input
+					type="text"
+					placeholder="new username"
+					bind:value={newUserName}
+				/>
+				<!-- <button on:click={handleChangeName}>Change</button> -->
+				<button
+					on:click={async () => {
+						if (!newUserName.length) {
+							indication_username = "Cannot be empty";
+						} else if (newUserName.length > 20) {
+							indication_username = "20 char Max";
+						} else {
+							handleChangeName();
+						}
+					}}>Change</button
+				>
 			</p>
+			{#if indication_username !== ""}
+				<div class="indication">{indication_username}</div>
+			{/if}
 			<p>
 				Change Avatar (.jpg only !)
-				<input type="text" bind:value={newImg} />
-				<button on:click={handleChangeImage}>Change</button>
+				<input
+					type="text"
+					placeholder="avatar img link"
+					bind:value={newImg}
+				/>
+				<!-- <button on:click={handleChangeImage}>Change</button> -->
 				<button
-					on:click={() => {
-						openModal("Try Avatar");
-						goto("/Profile");
+					on:click={async () => {
+						if (!newImg.length) {
+							indication_avatar = "Cannot be empty";
+						} else if (newImg.length > 200) {
+							indication_avatar = "200 char Max";
+						} else {
+							handleChangeImage();
+						}
+					}}>Change</button
+				>
+				<button
+					on:click={async () => {
+						if (!newImg.length) {
+							indication_avatar = "Cannot be empty";
+						} else if (newImg.length > 200) {
+							indication_avatar = "200 char Max";
+						} else {
+							openModal("Try Avatar");
+							goto("/Profile");
+						}
 					}}
 				>
 					Try
 				</button>
+				{#if indication_avatar !== ""}
+					<div class="indication">{indication_avatar}</div>
+				{/if}
 			</p>
 			<div>You could try : images/defaultAvatar.jpg</div>
 			<div>You could try : images/backgroundImg.jpg</div>
@@ -206,7 +215,6 @@
 				<span> Google Authentificator : </span>
 				{#if Google2fa === true}
 					<span>
-						<!-- <button on:click={Disable_2fa}>Disable</button> -->
 						<button
 							on:click={() => {
 								openModal("Try Disable 2fa");
@@ -218,7 +226,6 @@
 					</span>
 				{:else}
 					<span>
-						<!-- <button on:click={Enable_2fa}>Enable</button> -->
 						<button
 							on:click={() => {
 								openModal("Try Enable 2fa");
@@ -235,6 +242,9 @@
 {/if}
 
 <style>
+	.indication {
+		color: crimson;
+	}
 	input {
 		border-color: black;
 		border-width: 1px;

@@ -1,11 +1,11 @@
 import { BeforeInsert, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { FriendshipEntity } from "./friendship.entity";
+// import { FriendshipEntity } from "./friendship.entity";
 
 @Entity()
 export class UserEntity {
 
-  @OneToMany(() => FriendshipEntity, (friendship) => friendship.id)
-  friendship_relation: FriendshipEntity[];
+  // @OneToMany(() => FriendshipEntity, (friendship) => friendship.id)
+  // friendship_relation: FriendshipEntity[];
 
   @PrimaryGeneratedColumn()
   id: number;

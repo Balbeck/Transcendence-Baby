@@ -153,6 +153,9 @@ export class AuthController {
         if (!data) { console.log("[ error ] -[ ChangeName ]- data inexistantes"); throw new UnauthorizedException() }
         let login: string = data.login;
         let newUsername: string = data.newUsername;
+        if (!newUsername.length || newUsername.length > 20) {
+            throw new UnauthorizedException();
+        }
 
         const newUser = await this.authService.change_userName(login, newUsername);
         // si Changement bien effectue, issue a new Jwt avec new Payload
@@ -173,7 +176,10 @@ export class AuthController {
     @HttpCode(HttpStatus.OK)
     @Post('changeImage')
     async changeImage(@Request() req, @Response() res) {
-        const img = req.body.data.img;
+        const img: string = req.body.data.img;
+        if (!img.length || img.length > 200) {
+            throw new UnauthorizedException();
+        }
         const login = req.body.data.login;
         const user = await this.userService.find_user_by_login(login);
         console.log("-[ Img ]-  old Avatar: ", user.avatar);

@@ -241,13 +241,14 @@
 					</p>
 				{:else}
 					{#each friendsList as friendUser}
-						<div class="user-card" />
-						<p>{friendUser}</p>
-						<button
-							on:click={() => {
-								handleRemoveFriend(friendUser);
-							}}>Undo Friendship</button
-						>
+						<div class="user-card">
+							<p>{friendUser}</p>
+							<button
+								on:click={() => {
+									handleRemoveFriend(friendUser);
+								}}>Undo Friendship</button
+							>
+						</div>
 					{/each}
 				{/if}
 
@@ -256,26 +257,28 @@
 					<p>Sorry Bro, no one wants to be your friend !</p>
 				{:else}
 					{#each pendingList as pendingUser}
-						<div class="user-card" />
-						<p>{pendingUser}</p>
-						<button
-							on:click={() => {
-								handleAcceptFriend(pendingUser);
-							}}>Accept</button
-						>
-						<button
-							on:click={() => {
-								handleRefuseFriendRequest(pendingUser);
-							}}>Refuse</button
-						>
+						<div class="user-card">
+							<p>{pendingUser}</p>
+							<button
+								on:click={() => {
+									handleAcceptFriend(pendingUser);
+								}}>Accept</button
+							>
+							<button
+								on:click={() => {
+									handleRefuseFriendRequest(pendingUser);
+								}}>Refuse</button
+							>
+						</div>
 					{/each}
 				{/if}
 
 				{#if sentRequestListEmptyArray === false}
 					<h2>Waiting an answer from</h2>
 					{#each sentRequestsList as requestedUser}
-						<div class="user-card" />
-						<p>{requestedUser}</p>
+						<div class="user-card">
+							<p>{requestedUser}</p>
+						</div>
 					{/each}
 				{/if}
 			</div>

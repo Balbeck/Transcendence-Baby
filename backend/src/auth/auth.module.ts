@@ -1,7 +1,7 @@
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { FriendshipEntity } from 'src/users/orm/friendship.entity';
+// import { FriendshipEntity } from 'src/users/orm/friendship.entity';
 import { UserEntity } from 'src/users/orm/user.entity';
 import { UserModule } from 'src/users/user.module';
 import { UserService } from 'src/users/user.service';
@@ -19,7 +19,7 @@ import { RefreshTokenStrategy } from './strategies/refreshToken.strategy';
     ConfigModule,
     UserModule,
     HttpModule,
-    TypeOrmModule.forFeature([UserEntity, FriendshipEntity]),
+    TypeOrmModule.forFeature([UserEntity]),
 
     // JwtModule.registerAsync({
     //   imports: [ConfigModule],
