@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from "svelte";
 	import LoginButton from "./LoginButton.svelte";
-	import { goto } from "$app/navigation";
+	//import { goto } from "$app/navigation";
 
 	onMount(() => {
 		// Code a exécuter lorsque SPA est chargée

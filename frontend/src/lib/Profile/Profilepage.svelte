@@ -134,7 +134,9 @@
 				/>
 			{/if}
 			{#if selectedModal === "errorMsg"}
-				<ErrorModal msg="username [ {username} ] is already used !" />
+				<ErrorModal
+					msg="username [ {newUserName} ] is already used !"
+				/>
 			{/if}
 			{#if selectedModal === "Try Enable 2fa"}
 				<Enable2Fa {login} />

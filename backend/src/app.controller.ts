@@ -9,25 +9,6 @@ export class AppController {
     // private readonly authService: AuthService,
   ) { }
 
-  //  *[ Test without - 42 API - ]*
-  // @Get('add')
-  // addUsersTest() {
-  //   return this.appService.addUsersTest()
-  // }
-
-  // @Get('/42api-return')
-  // async authentificate_42_User(@Request() req, @Response() res) {
-  //   const jwt = await this.authService.authentification_42(req);
-  //   console.log("le jwt Controller:", jwt);
-
-
-
-  //   // redirection vers le front avec le Jwt en Url
-  //   const frontendUrl = `http://localhost:5173/?jwt=${jwt}`;
-  //   res.redirect(frontendUrl);
-  // }
-
-
 
   // @Get('loginChchao')
   // async loginChris(@Response() res) {

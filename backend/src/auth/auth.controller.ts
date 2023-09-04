@@ -15,11 +15,11 @@ const redirect_uri = encodeURIComponent('http://localhost:3000/auth/42api-return
 @Controller('auth')
 export class AuthController {
     constructor(
-        private readonly authService: AuthService,
-        private userService: UserService,
-        private jwtService: JwtService,
         private configService: ConfigService,
+        private authService: AuthService,
+        private userService: UserService,
         private jwtAuthService: JwtAuthService,
+        private jwtService: JwtService,
     ) { }
 
 
@@ -70,11 +70,6 @@ export class AuthController {
         return true
     }
     /////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
 
 
 

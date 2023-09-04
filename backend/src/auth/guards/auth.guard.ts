@@ -1,15 +1,7 @@
-import {
-	CanActivate,
-	ExecutionContext,
-	Inject,
-	Injectable,
-	UnauthorizedException,
-	forwardRef,
-} from '@nestjs/common';
+import { CanActivate, ExecutionContext, Inject, Injectable, UnauthorizedException, forwardRef } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { UserService } from 'src/users/user.service';
-import { AuthService } from '../auth.service';
 import { JwtAuthService } from '../jwt/jwt.service';
 
 @Injectable()
@@ -32,7 +24,6 @@ export class AuthGuard implements CanActivate {
 			console.log("[ AuthGuard ] - Pas de token avec la request");
 			throw new UnauthorizedException();
 		}
-
 		try {
 			console.log("[ AuthGuard ] - Token present avec la request");
 			console.log("[ AuthGuard ] - Token: ", token);
@@ -70,7 +61,6 @@ export class AuthGuard implements CanActivate {
 				console.error('[ AuthGuard ] - X { INVALID } X JwT :', error.message);
 				throw new UnauthorizedException();
 			}
-
 			return true;
 		} catch {
 			throw new UnauthorizedException();

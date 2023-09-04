@@ -2,7 +2,6 @@
 	import { goto } from "$app/navigation";
 	import { closeModal } from "$lib/store/ModalValues";
 	import {
-		authentificated,
 		googleAuth,
 		isGoogleAuthActivated,
 		isGoogleAuthEnabled,
@@ -25,7 +24,6 @@
 		if (response.ok) {
 			console.log("-[ Disable 2fa ]- OK ");
 		}
-		// authentificated.set(false);
 		isGoogleAuthEnabled.set(false);
 		isGoogleAuthActivated.set(false);
 		googleAuth.set(false);

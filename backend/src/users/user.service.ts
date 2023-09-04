@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable, forwardRef } from '@nestjs/common';
+import { BadRequestException, Injectable, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserEntity } from './orm/user.entity';
@@ -378,18 +378,3 @@ export class UserService {
 	}
 
 }
-
-
-
-
-
-	// async setCurrentRefreshToken(refreshToken: string, userId: number) {
-	// 	const currentHashedRefreshToken = await bcrypt.hash(refreshToken, 10);
-	// 	await this.userRepository.update(userId, {
-	// 		currentHashedRefreshToken
-	// 	});
-	// }
-	// async update(id: number, updateUserDto: UpdateUserDto): Promise<UserEntity> {
-	// 	await this.userRepository.update(id, updateUserDto);
-	// 	return await this.userRepository.findOne({ where: { id: id } });
-	// }

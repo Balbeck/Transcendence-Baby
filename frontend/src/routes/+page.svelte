@@ -1,10 +1,8 @@
 <script lang="ts">
 	//     ********* [ Imports ] *********
 	import Modal from "$lib/modals/Modal.svelte";
-	import Profilpage from "$lib/profile/Profilepage.svelte";
 	import Chat from "$lib/chat/Chat.svelte";
 	import Game from "$lib/game/Game.svelte";
-	import FindFriends from "../lib/findFriends/FindFriends.svelte";
 
 	// Imports  -[ Functions ]-
 	import { closeModal, errorMsg } from "$lib/store/ModalValues";

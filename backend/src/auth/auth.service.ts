@@ -1,17 +1,15 @@
 
 import { Injectable, UnauthorizedException, BadRequestException, } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
-import { UserService } from 'src/users/user.service';
 import * as argon2 from 'argon2';
-import { ConfigService } from '@nestjs/config';
 import * as otplib from 'otplib';
 import { toDataURL } from 'qrcode';
-import { UserEntity } from 'src/users/orm/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { JwtAuthService } from './jwt/jwt.service';
-
-
+import { UserEntity } from 'src/users/orm/user.entity';
+import { UserService } from 'src/users/user.service';
 
 @Injectable()
 export class AuthService {
@@ -19,12 +17,12 @@ export class AuthService {
   constructor(
     private httpService: HttpService,
     private userService: UserService,
-    private jwtService: JwtService,
     private configService: ConfigService,
     private jwtAuthService: JwtAuthService,
+    private jwtService: JwtService,
   ) { }
 
-  // * - - - [  OnLine Users - MAP< string, User > -  ] - - - *
+  // * - - - [  OnLine Users - MAP< number, User > -  ] - - - *
   add_Online_User_inMap(jwt: string, user: UserEntity) {
     const decoded = this.jwtService.decode(jwt) as { [key: string]: any };
     console.log(" -[ add MAP ]-  Id: {", decoded.id, "}")
@@ -33,7 +31,6 @@ export class AuthService {
       this.onlineUsersMap.set(decoded.id, user);
     }
   }
-  //operation sur le MAp effectue directement dans les fct d'Auth
 
   remove_Online_User_inMap(jwt: string) {
     const decoded = this.jwtService.decode(jwt) as { [key: string]: any };
@@ -102,7 +99,6 @@ export class AuthService {
         const url = 'https://api.intra.42.fr/oauth/token';
         const param = `grant_type=authorization_code&code=${code}&client_id=${uid}&client_secret=${secret}&redirect_uri=${redirect_uri}`;
         const response$ = this.httpService.post(url, param);
-        //console.log("{ Access Token } 'Response recu !' suite...");
         const response = await lastValueFrom(response$)
 
         const accessToken = response.data.access_token;
@@ -114,12 +110,9 @@ export class AuthService {
         const getMe$ = this.httpService.get(urlMe, { headers });
         const getMe = await lastValueFrom(getMe$);
         //console.log(" -[ 42 ]- /v2/me: ", getMe.data)
-
         const data = getMe.data;
 
-
         // Verifier si le login existe deja dans la dataBase sinon create !
-        //let user_in_db = await this.userService.find_user_by_userName(data.username);
         let user_in_db = await this.userService.find_user_by_login(data.login);
         if (!user_in_db) {
           console.log("User: [ ", data.login, " ] doesnt exist in DB, So lets create it ! *");
@@ -140,41 +133,14 @@ export class AuthService {
           console.log("User:  [ ", user_in_db.login, ' ] => Already exist in the Db');
         }
         const newCreatedUser = await this.userService.find_user_by_login(data.login);
-        // Create and return Jwt
-        let jwt_refresh_token_payload = {
-          "id": newCreatedUser.id,
-          "login": newCreatedUser.login,
-          "username": newCreatedUser.userName
-        }
-
-        //        const refresh_token = await this.sign_refresh_jwt(jwt_refresh_token_payload);
-        const refresh_token = await this.jwtAuthService.createToken(jwt_refresh_token_payload);
-
-
-
-
-        //console.log("-[ Auth 42 ]- , Refresh Token :  ", refresh_token);
-        const hashed_refresh_token = this.hashData(refresh_token);
-        await this.userService.update_User_RefreshToken(newCreatedUser.login, await hashed_refresh_token);
-        //console.log("[ After Refresh Update] User: ", await this.userService.find_user_by_login(newCreatedUser.login));
-
         let jwt_payload = {
           "id": newCreatedUser.id,
           "login": newCreatedUser.login,
           "username": newCreatedUser.userName,
-          "refresh_token": hashed_refresh_token
         }
-        //console.log("Creation du Token avec payload ... payload: ", jwt_payload);
-
-
-        //const jwt = this.asign_jtw_token(jwt_payload);
         const jwt = await this.jwtAuthService.createToken(jwt_payload);
-
-
         this.add_Online_User_inMap(await jwt, newCreatedUser);
-        //this.onlineUsersMap.set(await jwt, newCreatedUser);
         return jwt;
-        //return this.asign_jtw_token(jwt_payload);
       }
 
       catch (error) {
@@ -232,102 +198,23 @@ export class AuthService {
       if (this.isTwoFactorAuthenticationCodeValid(code, secret)) {
         await this.userService.turn_2fa_on(login);
         console.log("-[ Verify_2Fa ]- Code Valide");
+
         // Create and return Jwt
-        let jwt_refresh_token_payload = {
-          "id": newAuthUser.id,
-          "login": newAuthUser.login,
-          "username": newAuthUser.userName
-        }
-
-
-
-        //const refresh_token = await this.sign_refresh_jwt(jwt_refresh_token_payload);
-        const refresh_token = await this.jwtAuthService.createToken(jwt_refresh_token_payload);
-
-
-
-
-        //console.log("-[ Auth 42 ]- , Refresh Token :  ", refresh_token);
-        const hashed_refresh_token = this.hashData(refresh_token);
-        await this.userService.update_User_RefreshToken(newAuthUser.login, await hashed_refresh_token);
-        //console.log("[ After Refresh Update] User: ", await this.userService.find_user_by_login(newAuthUser.login));
-
         let jwt_payload = {
           "id": newAuthUser.id,
           "login": newAuthUser.login,
           "username": newAuthUser.userName,
-          "refresh_token": hashed_refresh_token
         }
         console.log("Creation du Token avec payload ... payload: ", jwt_payload);
-
-
-        //const jwt = this.asign_jtw_token(jwt_payload);
         const jwt = await this.jwtAuthService.createToken(jwt_payload);
-
-
         this.onlineUsersMap.set(newAuthUser.id, newAuthUser);
         return jwt;
       }
-      // else {
-      //   await this.userService.clear2fa(login);
-      // }
     }
     console.log("-[ Verify_2Fa ]- Code INVALIDE");
     return null;
   }
   /////////////////////////////////////////////////////////////////////////////////////////////
-
-
-  // // * - - - [  J.W.T  ] - - - *
-  // async asign_jtw_token(payload: any): Promise<any> {
-  //   console.log('-[ Auth Asign_jwt_token ]-  Payload: ', payload);
-  //   let jwt = await this.jwtService.signAsync(payload);
-  //   const res = this.jwtService.decode(jwt) as { [key: string]: any };
-  //   console.log('-[ Auth Asign_jwt_token ]-New Jwt encode: ', res);
-  //   return jwt;
-  //   //return { access_token: this.jwtService.sign(payload) };
-  // }
-
-  // async updateRefreshToken(login: string, refreshToken: string) {
-  //   const hashedRefreshToken = await this.hashData(refreshToken);
-  //   await this.userService.update_User_RefreshToken(login, hashedRefreshToken);
-  // }
-
-  // async sign_normal_jwt(payload: any) {
-  //   return await this.jwtService.signAsync(
-  //     {
-  //       id: payload.id,
-  //       login: payload.login,
-  //       username: payload.username
-  //     },
-  //     {
-  //       //secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
-  //       expiresIn: '15m',
-  //     },
-  //   );
-  // }
-
-  // async sign_refresh_jwt(payload: any) {
-  //   return await this.jwtService.signAsync(
-  //     {
-  //       id: payload.id,
-  //       login: payload.login,
-  //       username: payload.username
-  //     },
-  //     {
-  //       //secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
-  //       expiresIn: '7d',
-  //     },
-  //   );
-  // }
-
-  // // * - -[  J.W.T  ]- - * / [ Generate Jwt + Refresh ]
-  // async getTokens(payload: any) {
-  //   const accessToken = await this.sign_normal_jwt(payload);
-  //   const refreshToken = await this.sign_refresh_jwt(payload);
-  //   return { accessToken, refreshToken };
-  // }
-  // //////////////////////////////////////////////////////////////////////////////////////
 
 
   // * - - - [  Change UserName  ] - - - *
@@ -374,11 +261,8 @@ export class AuthService {
     console.log("mapSize: ", mapSize)
     //
 
-    return this.userService.update_User_RefreshToken(login, null);
-    // voir si mise en place  - une map<> pour online Users - une map<> inGame Users
   }
   /////////////////////////////////////////////////////////////////
-
 
 
   // * - - - [ Password - H A S H ] - - - *
@@ -386,107 +270,5 @@ export class AuthService {
     return argon2.hash(data);
   }
   ///////////////////////////////////////////
-
-
-  // // * - -[  Register New { User }  ]- - *
-  // async registerNewUser(bodyRequest) {
-  //   console.log("-[ Auth-RegisterNewUser ]- BodyRequest: ", bodyRequest);
-  //   const email = bodyRequest.email;
-  //   const name = bodyRequest.name;
-  //   let password = bodyRequest.password;
-
-  //   if (!email || !name || !password) {
-  //     return null;
-  //   }
-  //   const user = await this.userService.find_user_by_login(name);
-  //   if (user) {
-  //     return null;
-  //     //throw new BadRequestException('User already exists')
-  //   }
-  //   const hash = await this.hashData(password);
-  //   return this.addNewRegistredUser(email, name, password);
-  // }
-
-  // // * - -[  Add New { User } to DB and send a { JWT } ]- - *
-  // async addNewRegistredUser(email: string, name: string, password: string) {
-  //   console.log("-[Auth]- NewRegistredUser");
-  //   try {
-  //     let payload = {
-  //       "is42": false,
-  //       "hasPassword": true,
-  //       "login": name,
-  //       "userName": name,
-  //       "email": email,
-  //       "password": password
-  //     }
-  //     console.log("[ Register ] -> payload: ", payload);
-  //     this.userService.add_new_user(payload);
-  //     let user = await this.userService.find_user_by_login(name);
-  //     console.log("-[ Register ]- user: ", user);
-
-  //     // Create and return Jwt
-  //     let jwt_refresh_token_payload = {
-  //       "id": user.id,
-  //       "login": user.login,
-  //       "username": user.userName
-  //     }
-  //     const refresh_token = await this.sign_refresh_jwt(jwt_refresh_token_payload);
-  //     console.log("-[ Auth 42 ]- , Refresh Token before Has:  ", refresh_token);
-
-  //     const hashed_refresh_token = await this.hashData(refresh_token);
-  //     await this.userService.update_User_RefreshToken(user.login, hashed_refresh_token);
-  //     console.log("[ After Refresh Update] User: ", await this.userService.find_user_by_login(user.login));
-
-  //     let jwt_payload = {
-  //       "id": user.id,
-  //       "login": user.login,
-  //       "username": user.userName,
-  //       "refresh_token": hashed_refresh_token
-  //     }
-  //     console.log("Creation du Token avec payload pour *[ New Registrer User ]* ...");
-  //     return this.asign_jtw_token(jwt_payload);
-  //   }
-  //   catch (e) {
-  //     return null;
-  //     //throw new UnauthorizedException();
-  //   }
-  // }
-  // ///////////////////////////////////////////////////////////////////////////////////////////
-
-
-  // // * - -[  Login { User }  ]- - *
-  // async login(bodyRequest) {
-  //   const name = bodyRequest.name;
-  //   const password = bodyRequest.password;
-
-  //   if (!name || !password) {
-  //     throw new BadRequestException('User does not exist');;
-  //   }
-  //   try {
-  //     const user = await this.userService.find_user_by_login(name);
-  //     if (!user) {
-  //       throw new BadRequestException('User does not exist');
-  //     }
-  //     const passwordMatches = await argon2.verify(user.hash, password);
-  //     if (!passwordMatches) {
-  //       throw new UnauthorizedException('Password is incorrect');
-  //     }
-  //     let jwtPayload = {
-  //       "id": user.id,
-  //       "login": user.login,
-  //       "username": user.userName
-  //     }
-  //     //const refreshToken = await this.sign_refresh_jwt(jwtPayload);
-  //     //const accessToken = await this.sign_normal_jwt(jwtPayload);
-  //     const tokens = await this.getTokens(jwtPayload);
-  //     await this.updateRefreshToken(user.login, tokens.refreshToken);
-  //     return tokens.accessToken;
-  //     // return await this.asign_jtw_token(jwt_payload);
-  //   }
-  //   catch (e) {
-  //     throw new UnauthorizedException();
-  //   }
-  // }
-  // ////////////////////////////////////////////////////////////////////////////////////////
 
 }
