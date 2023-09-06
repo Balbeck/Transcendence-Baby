@@ -6,6 +6,7 @@ import { HttpModule } from '@nestjs/axios';
 import { AppController } from './app.controller';
 import { UserModule } from './users/user.module';
 import { AuthModule } from './auth/auth.module';
+import { GameModule } from './game/game.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { AuthModule } from './auth/auth.module';
     }),
     UserModule,
     AuthModule,
+    GameModule,
   ],
   controllers: [AppController],
   providers: [AppService],

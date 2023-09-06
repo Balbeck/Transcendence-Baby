@@ -19,12 +19,17 @@
 		"tailwindcss": "^3.3.3",
 		"tslib": "^2.4.1",
 		"typescript": "^5.0.0",
-		"vite": "^4.4.2"
+		"vite": "^4.4.9"
 	},
 	"type": "module",
 	"dependencies": {
+		"@colyseus/schema": "^2.0.15",
+		"colyseus": "^0.15.7",
+		"colyseus.js": "^0.15.13",
 		"otplib": "^12.0.1",
 		"qrcode": "^1.5.3",
-		"qrcode-svg": "^1.1.0"
+		"qrcode-svg": "^1.1.0",
+		"socket.io": "^4.7.2",
+		"socket.io-client": "^4.7.2"
 	}
 }

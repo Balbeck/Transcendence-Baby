@@ -13,7 +13,7 @@ async function bootstrap() {
     origin: '*',
     methods: 'GET,POST',
     credentials: true,
-    allowedHeaders: 'Content-Type,Authorization',
+    allowedHeaders: 'Content-Type, Authorization, Accept',
   });
 
   // app.use(cors({

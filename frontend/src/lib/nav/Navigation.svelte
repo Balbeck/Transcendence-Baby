@@ -38,18 +38,17 @@
 	function handleFriends() {
 		goto("Friends");
 	}
+	function handleGame() {
+		goto("game");
+	}
 </script>
 
 <nav class="w-full flex gap-10 p-2 justify-center items-center h-full">
 	<button on:click={() => goto("/")}>Home</button>
 	<!-- <button on:click={() => openModal("profile")}>Profile</button> -->
 	<button on:click={handleProfile}>Profile</button>
-	<button
-		on:click={() => {
-			goto("/");
-			openModal("game");
-		}}>Jeu</button
-	>
+	<button on:click={handleGame}>Game</button>
+
 	<button
 		on:click={() => {
 			goto("/");
