@@ -69,7 +69,8 @@ export class UserService {
 	}
 
 
-	// -[ 2fa Google Authentificator ]-
+	// -[ 2fa Google Authentificator ]- ///////////////////////////////////
+
 	async enable_2fa(login: string) {
 		// Genere Secret pour QrCode
 		const secret = otplib.authenticator.generateSecret();
@@ -136,7 +137,7 @@ export class UserService {
 			await this.userRepository.save(receiver);
 		}
 
-		//////// console.log
+		//////// console.log Debug
 		const user1test = await this.find_user_by_login(requester.login);
 		const user2test = await this.find_user_by_login(receiver.login);
 		console.log("7  -[ RequestFriend ]- ", user1test.login, "  friendRequestSent list: ", user1test.friendRequestsSent);
@@ -161,7 +162,7 @@ export class UserService {
 			await this.userRepository
 				.createQueryBuilder()
 				.update()
-				.set({ friends: user1.friends }) // Mettez à jour le champ friends avec la nouvelle liste d'amis
+				.set({ friends: user1.friends }) // Met à jour le champ friends avec la nouvelle liste d'amis
 				.where("id = :id", { id: user1.id })
 				.execute();
 			//await this.userRepository.save(user1);
@@ -174,7 +175,7 @@ export class UserService {
 			await this.userRepository
 				.createQueryBuilder()
 				.update()
-				.set({ friends: user2.friends }) // Mettez à jour le champ friends avec la nouvelle liste d'amis
+				.set({ friends: user2.friends }) // Met à jour le champ friends avec la nouvelle liste d'amis
 				.where("id = :id", { id: user2.id })
 				.execute();
 			//await this.userRepository.save(user2);
