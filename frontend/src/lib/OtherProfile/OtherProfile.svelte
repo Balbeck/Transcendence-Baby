@@ -7,6 +7,8 @@
 
 	let login: string;
 	let pictureLink: string;
+	let rank: string;
+	let title: string;
 
 	let isFriend: boolean;
 	let isPending: boolean;
@@ -33,6 +35,8 @@
 					login = user.login;
 					pictureLink = user.avatar;
 					username = user.username;
+					rank = user.rank;
+					title = user.title;
 
 					isFriend = user.isMyFriend;
 					isPending = user.isInPending;
@@ -142,6 +146,8 @@
 	<div>
 		<p>Login : {login}</p>
 		<p>Name : {username}</p>
+		<p>Rank : {rank}</p>
+		<p>Title: {title}</p>
 	</div>
 	{#if isFriend === true}
 		<button

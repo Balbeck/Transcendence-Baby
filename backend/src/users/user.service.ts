@@ -280,6 +280,32 @@ export class UserService {
 	}
 
 
+	//////////////////////////////////////////////////
+	//		 ********************				   //
+	// 		***    [ GAME ]    ***				  //
+	//		 ********************				 //
+	//////////////////////////////////////////////
+
+
+	async incrementRankAndTitle(id: number) {
+		let rank: number;
+		let title: string;
+		const user = await this.find_user_by_id(id);
+		console.log(" -[ Game Ranking ]- user: [", user.userName, "] -> formerRank: (", user.rank, ") -> Title: { ", user.title, " }");
+		rank = user.rank;
+		if (rank < 100) {
+			rank += 1;
+			user.rank = rank;
+		}
+		if (rank === 2) {
+			user.title = "Confirmed";
+		}
+		else if (rank > 2) {
+			user.title = "God of War";
+		}
+		await this.userRepository.save(user);
+
+	}
 
 	///////////////////////////////////////////////////////////////////////////
 	//																		//

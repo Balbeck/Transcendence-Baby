@@ -63,6 +63,8 @@ export class UserEntity {
   // Game
   @Column({ nullable: false, default: 1 })
   rank: number;
+  @Column({ nullable: false, default: "Newbee" })
+  title: string;
 
 
   @BeforeInsert()

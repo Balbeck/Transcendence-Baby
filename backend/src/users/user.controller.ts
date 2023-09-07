@@ -51,6 +51,8 @@ export class UserController {
 					login: userProfile.login,
 					username: userProfile.userName,
 					avatar: userProfile.avatar,
+					rank: userProfile.rank,
+					title: userProfile.title,
 
 					isMyFriend: requesterProfile.friends.includes(userProfile.login),
 					isInPending: requesterProfile.pendindFriendRequests.includes(userProfile.login),
@@ -188,6 +190,17 @@ export class UserController {
 		}
 	}
 
+	@HttpCode(HttpStatus.OK)
+	@UseGuards(AuthGuard)
+	@Post('increment')
+	async incrementWinner(@Request() req) {
+		const token = req.headers.authorization;
+		if (token) {
+			const jwt = token.replace('Bearer', '').trim();
+			const decoded = this.jwtService.decode(jwt) as { [key: string]: any };
+			await this.userService.incrementRankAndTitle(decoded.id);
+		}
+	}
 
 
 	@HttpCode(HttpStatus.OK)

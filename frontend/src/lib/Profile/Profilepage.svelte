@@ -30,6 +30,8 @@
 
 	let login: string;
 	let pictureLink: string;
+	let rank: string;
+	let title: string;
 	let newUserName: string = "";
 	$: newImg = "";
 	$: username = "";
@@ -62,6 +64,8 @@
 					login = user.login;
 					pictureLink = user.avatar;
 					username = user.userName;
+					rank = user.rank;
+					title = user.title;
 
 					googleAuth.set(user.fa2);
 					console.log("2fa Value from user: [ ", user.fa2, " ]");
@@ -156,6 +160,8 @@
 		<div>
 			<p>Login : {login}</p>
 			<p>Name : {username}</p>
+			<p>Rank : {rank}</p>
+			<p>Title : {title}</p>
 			<p>
 				Change username
 				<input

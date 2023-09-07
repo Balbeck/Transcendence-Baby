@@ -4,6 +4,7 @@
 	import type { GameState } from "../../../../backend/src/game/game.schema";
 	import GameModal from "$lib/game/gameModal.svelte";
 	import * as Colyseus from "colyseus.js";
+	import IncrementButton from "$lib/game/IncrementButton.svelte";
 
 	// import backgroundImage from "../../../static/images/playRoom.jpg";
 
@@ -63,6 +64,8 @@
 </script>
 
 <button on:click={openModal}>Create Game</button>
+<IncrementButton />
+
 <GameModal bind:isOpen={isModalOpen} on:close={closeModal}>
 	<!-- Your form can go here -->
 	<form on:submit|preventDefault={onSubmit}>
