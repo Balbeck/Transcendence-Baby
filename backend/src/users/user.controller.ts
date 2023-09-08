@@ -56,7 +56,9 @@ export class UserController {
 
 					isMyFriend: requesterProfile.friends.includes(userProfile.login),
 					isInPending: requesterProfile.pendindFriendRequests.includes(userProfile.login),
-					isInSentRequest: requesterProfile.friendRequestsSent.includes(userProfile.login)
+					isInSentRequest: requesterProfile.friendRequestsSent.includes(userProfile.login),
+					isInBlockList: requesterProfile.blockedUser.includes(userProfile.login),
+					isInBlockedByList: requesterProfile.blockedBy.includes(userProfile.login)
 				}
 				console.log(" -[ ProfileOther ]-  User-json(): ", user);
 				res.json(user);
@@ -202,6 +204,65 @@ export class UserController {
 		}
 	}
 
+
+	////////////////////  Block User System /////////////////////////////
+	@HttpCode(HttpStatus.OK)
+	@UseGuards(AuthGuard)
+	@Post('blockUser')
+	async blockAUser(@Request() req) {
+		console.log(" -[ BlockUser  / UsrCtrl ]- ");
+		const token = req.headers.authorization;
+		if (token) {
+			const jwt = token.replace('Bearer', '').trim();
+			const decoded = this.jwtService.decode(jwt) as { [key: string]: any };
+			const usernameToBlock: string = req.body.data.username;
+
+			this.userService.blockUser(decoded.login, usernameToBlock);
+		}
+	}
+
+	@HttpCode(HttpStatus.OK)
+	@UseGuards(AuthGuard)
+	@Post('unblockUser')
+	async unblockUser(@Request() req) {
+		console.log(" -[ UnblockUser  / UsrCtrl ]- ");
+		const token = req.headers.authorization;
+		if (token) {
+			const jwt = token.replace('Bearer', '').trim();
+			const decoded = this.jwtService.decode(jwt) as { [key: string]: any };
+			const usernameToUnblock: string = req.body.data.username;
+
+			this.userService.unblockUser(decoded.login, usernameToUnblock);
+		}
+	}
+
+	@HttpCode(HttpStatus.OK)
+	@UseGuards(AuthGuard)
+	@Get('blockUserList')
+	async getBlockUserList(@Request() req, @Response() res) {
+		console.log(" -[ getBlockUser  / UsrCtrl ]- ");
+		const token = req.headers.authorization;
+		if (token) {
+			const jwt = token.replace('Bearer', '').trim();
+			const decoded = this.jwtService.decode(jwt) as { [key: string]: any };
+			const blockUserList: string[] = await this.userService.getUsersIBlockList(decoded.id);
+			res.json(blockUserList);
+		}
+	}
+
+	@HttpCode(HttpStatus.OK)
+	@UseGuards(AuthGuard)
+	@Get('blockedByList')
+	async getBlockedByUserList(@Request() req, @Response() res) {
+		console.log(" -[ getBlockedBy  / UsrCtrl ]- ");
+		const token = req.headers.authorization;
+		if (token) {
+			const jwt = token.replace('Bearer', '').trim();
+			const decoded = this.jwtService.decode(jwt) as { [key: string]: any };
+			const blockedByList: string[] = await this.userService.getUsersWhoBlockedMeList(decoded.id);
+			res.json(blockedByList);
+		}
+	}
 
 	@HttpCode(HttpStatus.OK)
 	@UseGuards(AuthGuard)

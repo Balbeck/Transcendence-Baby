@@ -14,7 +14,7 @@
 		if (response.ok) {
 			console.log("-[ Increment Rank ]- Rank and Title well Updated !");
 		}
-		goto("/");
+		goto("/Profile");
 	}
 </script>
 

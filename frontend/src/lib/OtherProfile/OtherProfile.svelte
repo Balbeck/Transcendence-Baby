@@ -13,6 +13,8 @@
 	let isFriend: boolean;
 	let isPending: boolean;
 	let isRequested: boolean;
+	let hasBlocked: boolean;
+	let isBlockedBy: boolean;
 
 	onMount(async () => {
 		try {
@@ -41,6 +43,8 @@
 					isFriend = user.isMyFriend;
 					isPending = user.isInPending;
 					isRequested = user.isInSentRequest;
+					hasBlocked = user.isInBlockList;
+					isBlockedBy = user.isInBlockedByList;
 				}
 			}
 		} catch (e) {}
@@ -136,6 +140,48 @@
 		closeModal();
 		goto("/");
 	}
+
+	async function handleBlockUser() {
+		const jwt = localStorage.getItem("jwt");
+		const data = { username: username };
+		//console.log("-[ Remove Friend ]- username sent: ", username);
+		const response = await fetch("http://localhost:3000/user/blockUser", {
+			method: "POST",
+			headers: {
+				Authorization: `Bearer ${jwt}`,
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ data }),
+		});
+		if (response.ok) {
+			console.log("response { OK } du [ Block User ]");
+		} else {
+			console.log("response { NOT OK } du [ Block User ]");
+		}
+		closeModal();
+		goto("/");
+	}
+
+	async function handleUnblockUser() {
+		const jwt = localStorage.getItem("jwt");
+		const data = { username: username };
+		//console.log("-[ Remove Friend ]- username sent: ", username);
+		const response = await fetch("http://localhost:3000/user/unblockUser", {
+			method: "POST",
+			headers: {
+				Authorization: `Bearer ${jwt}`,
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ data }),
+		});
+		if (response.ok) {
+			console.log("response { OK } du [ Unblock User ]");
+		} else {
+			console.log("response { NOT OK } du [ Unblock User ]");
+		}
+		closeModal();
+		goto("/");
+	}
 </script>
 
 <div class="profile-Page">
@@ -171,6 +217,26 @@
 			on:click={() => {
 				handleSendFriendRequest();
 			}}>Send friend Request</button
+		>
+	{/if}
+</div>
+<div>
+	{#if isBlockedBy === true}
+		<p>You have been blocked By {username} !</p>
+	{/if}
+</div>
+<div>
+	{#if hasBlocked === true}
+		<button
+			on:click={() => {
+				handleUnblockUser();
+			}}>Unblock</button
+		>
+	{:else if hasBlocked === false}
+		<button
+			on:click={() => {
+				handleBlockUser();
+			}}>Block</button
 		>
 	{/if}
 </div>

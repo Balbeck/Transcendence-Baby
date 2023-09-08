@@ -280,6 +280,90 @@ export class UserService {
 		return usernameSentRequestsList;
 	}
 
+	//////////////////  BLOCK USER SYSTEM ////////////////
+
+	async blockUser(login: string, usernameToBlock: string) {
+		let requester = await this.find_user_by_login(login);
+		let receiver = await this.find_user_by_userName(usernameToBlock);
+		if (!requester || !receiver) {
+			throw new BadRequestException('User not found');
+		}
+
+		if (!requester.blockedUser.includes(receiver.login)) {
+			requester.blockedUser.push(receiver.login);
+			console.log("4  -[ BlockUser ]- Ajout de [", receiver.login, "] a la BlockedUser list de [", requester.login, "]");
+			await this.userRepository.save(requester);
+		}
+
+		if (!receiver.blockedBy.includes(requester.login)) {
+			receiver.blockedBy.push(requester.login);
+			console.log("4  -[ BlockeUser ]- Ajout de [", requester.login, "] a la BlockedBy list de [", receiver.login, "]");
+			await this.userRepository.save(receiver);
+		}
+
+		//////// console.log Debug
+		const user1test = await this.find_user_by_login(requester.login);
+		const user2test = await this.find_user_by_login(receiver.login);
+		console.log("7  -[ BlockeUser ]- ", user1test.login, "  BlockedUser list: ", user1test.blockedUser);
+		console.log("8  -[ BlockeUser ]- ", user2test.login, "  BlockedBy list: ", user2test.blockedBy);
+		/////////////////////
+	}
+
+	async unblockUser(login: string, usernameToUnblock: string) {
+		let requester = await this.find_user_by_login(login);
+		let receiver = await this.find_user_by_userName(usernameToUnblock);
+		if (!requester || !receiver) {
+			throw new BadRequestException('User not found');
+		}
+
+
+		const friendIndex = requester.blockedUser.indexOf(receiver.login);
+		if (friendIndex !== -1) {
+			requester.blockedUser.splice(friendIndex, 1);
+			await this.userRepository.save(requester);
+		}
+
+		const friendIndex2 = receiver.blockedBy.indexOf(requester.login);
+		if (friendIndex2 !== -1) {
+			receiver.blockedBy.splice(friendIndex2, 1);
+			await this.userRepository.save(receiver);
+		}
+
+		//////// console.log Debug
+		const user1test = await this.find_user_by_login(requester.login);
+		const user2test = await this.find_user_by_login(receiver.login);
+		console.log("7  -[ UnblockUser ]- ", user1test.login, "  BlockedUser list: ", user1test.blockedUser);
+		console.log("8  -[ UnblockUser ]- ", user2test.login, "  BlockedBy list: ", user2test.blockedBy);
+		/////////////////////
+	}
+
+	async getUsersIBlockList(id: number) {
+		const user = await this.find_user_by_id(id);
+		console.log(" -[ Get User I Block ]- user: [", user.userName, "] -> BlockList: ", user.blockedUser);
+		const loginUserBlockedList: string[] = user.blockedUser;
+		// tranformation des login en usernames
+		let usernameUserBlockList: string[] = [];
+		for (const login of loginUserBlockedList) {
+			const user = await this.find_user_by_login(login);
+			const username: string = user.userName;
+			usernameUserBlockList.push(username);
+		}
+		return usernameUserBlockList;
+	}
+
+	async getUsersWhoBlockedMeList(id: number) {
+		const user = await this.find_user_by_id(id);
+		console.log(" -[ Get UsersWhoBlockedMe ]- user: [", user.userName, "] -> BlockByList: ", user.blockedBy);
+		const loginUserBlockedByList: string[] = user.blockedBy;
+		// tranformation des login en usernames
+		let usernameUserBlockedByList: string[] = [];
+		for (const login of loginUserBlockedByList) {
+			const user = await this.find_user_by_login(login);
+			const username: string = user.userName;
+			usernameUserBlockedByList.push(username);
+		}
+		return usernameUserBlockedByList;
+	}
 
 	//////////////////////////////////////////////////
 	//		 ********************				   //

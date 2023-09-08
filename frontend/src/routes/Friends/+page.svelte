@@ -34,6 +34,8 @@
 	let pendingList: string[] = [];
 	let friendsList: string[] = [];
 	let sentRequestsList: string[] = [];
+	let usersIBlockedList: string[] = [];
+	let usersWhoBlockedMeList: string[] = [];
 	//let users: string[] = ["Henry", "john", "boby"];
 	let userToDisplay: string;
 
@@ -41,6 +43,8 @@
 	let pendingListEmptyArray: boolean = false;
 	let friendsListEmptyArray: boolean = false;
 	let sentRequestListEmptyArray: boolean = false;
+	let usersIBlockedEmptyArray: boolean = false;
+	let usersWhoBlockedMeEmptyArray: boolean = false;
 
 	onMount(async () => {
 		try {
@@ -122,6 +126,45 @@
 					sentRequestListEmptyArray = true;
 				}
 				console.log("sendRequest List: ", sentRequestsList);
+			}
+
+			// Users I Blocked List
+			const blockedUsersListResponse = await fetch(
+				`http://localhost:3000/user/blockUserList`,
+				{
+					method: "GET",
+					headers: {
+						Authorization: `Bearer ${jwt}`,
+						"Content-Type": "application/json",
+					},
+				}
+			);
+			if (blockedUsersListResponse.ok) {
+				usersIBlockedList = await blockedUsersListResponse.json();
+				if (usersIBlockedList.length === 0) {
+					usersIBlockedEmptyArray = true;
+				}
+				console.log("usersIblockedList: ", usersIBlockedList);
+			}
+
+			// Users Who Blocked Me
+			const usersWhoBlockedMeListResponse = await fetch(
+				`http://localhost:3000/user/blockedByList`,
+				{
+					method: "GET",
+					headers: {
+						Authorization: `Bearer ${jwt}`,
+						"Content-Type": "application/json",
+					},
+				}
+			);
+			if (usersWhoBlockedMeListResponse.ok) {
+				usersWhoBlockedMeList =
+					await usersWhoBlockedMeListResponse.json();
+				if (usersWhoBlockedMeList.length === 0) {
+					usersWhoBlockedMeEmptyArray = true;
+				}
+				console.log("usersWhoBlockedMeList: ", usersWhoBlockedMeList);
 			}
 		} catch (e) {
 			console.log("Friend OnMount PB");
@@ -295,6 +338,34 @@
 							<button
 								on:click={() => {
 									handleSeeProfil(requestedUser);
+								}}>See Profile</button
+							>
+						</div>
+					{/each}
+				{/if}
+
+				{#if usersIBlockedEmptyArray === false}
+					<h2>Users I Blocked</h2>
+					{#each usersIBlockedList as blockedUser}
+						<div class="user-card">
+							<p>{blockedUser}</p>
+							<button
+								on:click={() => {
+									handleSeeProfil(blockedUser);
+								}}>See Profile</button
+							>
+						</div>
+					{/each}
+				{/if}
+
+				{#if usersWhoBlockedMeEmptyArray === false}
+					<h2>Users Who Blocked Me</h2>
+					{#each usersWhoBlockedMeList as blockedUser}
+						<div class="user-card">
+							<p>{blockedUser}</p>
+							<button
+								on:click={() => {
+									handleSeeProfil(blockedUser);
 								}}>See Profile</button
 							>
 						</div>
