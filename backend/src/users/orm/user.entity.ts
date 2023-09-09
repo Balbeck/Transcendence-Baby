@@ -1,4 +1,5 @@
 import { BeforeInsert, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { GameEntity } from "./game.entity";
 
 @Entity()
 export class UserEntity {
@@ -69,6 +70,13 @@ export class UserEntity {
   wonGameNbr: number;
   @Column({ nullable: false, default: 0 })
   lostGameNbr: number;
+
+  // Game Match History
+  @OneToMany(type => GameEntity, game => game.player1)
+  gamesAsPlayer1: GameEntity[];
+
+  @OneToMany(type => GameEntity, game => game.player2)
+  gamesAsPlayer2: GameEntity[];
 
 
   @BeforeInsert()

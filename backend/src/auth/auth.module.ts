@@ -2,6 +2,7 @@ import { Module, forwardRef } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from 'src/users/orm/user.entity';
+import { GameEntity } from 'src/users/orm/game.entity';
 import { UserModule } from 'src/users/user.module';
 import { UserService } from 'src/users/user.service';
 import { AuthController } from './auth.controller';
@@ -16,7 +17,7 @@ import { JwtAuthService } from './jwt/jwt.service';
     //forwardRef(() => UserModule),
     UserModule,
     HttpModule,
-    TypeOrmModule.forFeature([UserEntity]),
+    TypeOrmModule.forFeature([UserEntity, GameEntity]),
 
     JwtModule.register({
       global: true,

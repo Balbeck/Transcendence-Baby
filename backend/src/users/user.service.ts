@@ -1,7 +1,8 @@
-import { BadRequestException, Injectable, forwardRef } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserEntity } from './orm/user.entity';
+import { GameEntity } from './orm/game.entity';
 import * as otplib from 'otplib';
 import * as qrcode from 'qrcode';
 
@@ -11,6 +12,8 @@ export class UserService {
 	constructor(
 		@InjectRepository(UserEntity)
 		private userRepository: Repository<UserEntity>,
+		@InjectRepository(GameEntity)
+		private gameRepository: Repository<GameEntity>,
 	) { }
 
 	async find_all_users(): Promise<UserEntity[]> {
@@ -408,7 +411,7 @@ export class UserService {
 
 	async getInGameUsers() {
 		const inGameIdList: number[] = Array.from(this.inGameUsersSet);
-		// transform id en userName
+		// transforme id en userName
 		let usernameInGameList: string[] = [];
 		for (const id of inGameIdList) {
 			const user = await this.find_user_by_id(id);
@@ -417,8 +420,21 @@ export class UserService {
 		}
 		return usernameInGameList;
 	}
-}
 
+	// // Match History
+	async saveGameHistory(user1: UserEntity, user2: UserEntity, scoreUser1: number, scoreUser2: number) {
+
+		const game = new GameEntity();
+		game.player1 = user1;
+		game.player2 = user2;
+		game.player1Score = scoreUser1;
+		game.player2Score = scoreUser2;
+
+		await this.gameRepository.save(game);
+	}
+
+
+}
 ///////////////////////////////////////////////////////////////////////////
 //																		//
 //																	   //

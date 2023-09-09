@@ -18,6 +18,23 @@
 	let hasBlocked: boolean;
 	let isBlockedBy: boolean;
 
+	// faire Fct import de Game History Dans onMount
+	let games: any = [
+		{
+			player1: { userName: "Bob" },
+			player2: { userName: "John" },
+			player1Score: 3,
+			player2Score: 2,
+		},
+		{
+			player1: { userName: "Donald" },
+			player2: { userName: "Bob" },
+			player1Score: 3,
+			player2Score: 2,
+		},
+		// ... Ajoutez d'autres parties au besoin
+	];
+
 	onMount(async () => {
 		try {
 			const jwt = localStorage.getItem("jwt");
@@ -243,6 +260,20 @@
 				handleBlockUser();
 			}}>Block</button
 		>
+	{/if}
+</div>
+<div>
+	<h1>Game History</h1>
+	{#if games.length > 0}
+		{#each games as game, i}
+			<p>
+				{game.player1.userName}
+				{game.player1Score} vs {game.player2Score}
+				{game.player2.userName}
+			</p>
+		{/each}
+	{:else}
+		<p>Aucune partie trouvée.</p>
 	{/if}
 </div>
 
