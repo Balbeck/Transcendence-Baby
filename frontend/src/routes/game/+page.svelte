@@ -6,6 +6,8 @@
 	import * as Colyseus from "colyseus.js";
 	import IncrementButton from "$lib/game/IncrementButton.svelte";
 	import IncrementLooserButton from "$lib/game/IncrementLooserButton.svelte";
+	import EnterGameButton from "$lib/game/EnterGameButton.svelte";
+	import LeaveGameButton from "$lib/game/LeaveGameButton.svelte";
 
 	// import backgroundImage from "../../../static/images/playRoom.jpg";
 
@@ -62,12 +64,19 @@
 	const onSubmit = () => {
 		createRoomWithColyseus();
 	};
+	EnterGameButton;
+	LeaveGameButton;
 </script>
 
 <button on:click={openModal}>Create Game</button>
-
-<IncrementButton />
-<IncrementLooserButton />
+<div>
+	<IncrementButton />
+	<IncrementLooserButton />
+</div>
+<div>
+	<EnterGameButton />
+	<LeaveGameButton />
+</div>
 
 <GameModal bind:isOpen={isModalOpen} on:close={closeModal}>
 	<!-- Your form can go here -->

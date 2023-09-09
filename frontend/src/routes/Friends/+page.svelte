@@ -34,8 +34,8 @@
 	let friendsList: string[] = [];
 	let onlineFriendsList: string[] = [];
 
-	let inGameFriendsList: string[] = [];
 	let inGameUsersList: string[] = [];
+	let inGameFriendsList: string[] = [];
 
 	let pendingList: string[] = [];
 	let sentRequestsList: string[] = [];
@@ -47,6 +47,10 @@
 	let onlineUserEmptyArray: boolean = false;
 	let friendsListEmptyArray: boolean = false;
 	let onlineFriendsEmptyArray: boolean = false;
+
+	let inGameUsersEmptyArray: boolean = false;
+	let inGameFriendsEmptyArray: boolean = false;
+
 	let pendingListEmptyArray: boolean = false;
 	let sentRequestListEmptyArray: boolean = false;
 	let usersIBlockedEmptyArray: boolean = false;
@@ -71,6 +75,25 @@
 					onlineUserEmptyArray = true;
 				}
 				console.log("onlineUsers: ", onlineUsers);
+			}
+
+			// InGame Users
+			const inGameUsersListResponse = await fetch(
+				`http://localhost:3000/user/inGameUsers`,
+				{
+					method: "GET",
+					headers: {
+						Authorization: `Bearer ${jwt}`,
+						"Content-Type": "application/json",
+					},
+				}
+			);
+			if (inGameUsersListResponse.ok) {
+				inGameUsersList = await inGameUsersListResponse.json();
+				if (inGameUsersList.length === 0) {
+					inGameUsersEmptyArray = true;
+				}
+				console.log("inGameUsersList: ", inGameUsersList);
 			}
 
 			// Pending List
@@ -173,11 +196,20 @@
 				console.log("usersWhoBlockedMeList: ", usersWhoBlockedMeList);
 			}
 
+			// Online Friends
 			onlineFriendsList = friendsList.filter((friend) =>
 				onlineUsers.includes(friend)
 			);
 			if (onlineFriendsList.length === 0) {
 				onlineFriendsEmptyArray = true;
+			}
+
+			// InGame Friends
+			inGameFriendsList = friendsList.filter((friend) =>
+				inGameUsersList.includes(friend)
+			);
+			if (inGameFriendsList.length === 0) {
+				inGameFriendsEmptyArray = true;
 			}
 		} catch (e) {
 			console.log("Friend OnMount PB");
@@ -302,7 +334,26 @@
 				{:else}
 					{#each onlineFriendsList as user}
 						<div class="user-card">
-							<p>{user}</p>
+							<p>🎾 {user}</p>
+							<button
+								on:click={() => {
+									handleSeeProfil(user);
+								}}>See Profile</button
+							>
+						</div>
+					{/each}
+				{/if}
+
+				<h2>In Game Friends</h2>
+				{#if inGameFriendsEmptyArray === true}
+					<p>
+						None of your friends is playing right now. Invite them
+						to play !
+					</p>
+				{:else}
+					{#each inGameFriendsList as user}
+						<div class="user-card">
+							<p>🎱 {user}</p>
 							<button
 								on:click={() => {
 									handleSeeProfil(user);

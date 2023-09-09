@@ -194,6 +194,8 @@ export class UserController {
 		}
 	}
 
+	///////////////////////  G A M E ///////////////////////////////////////////////
+
 	@HttpCode(HttpStatus.OK)
 	@UseGuards(AuthGuard)
 	@Post('increment')
@@ -218,6 +220,48 @@ export class UserController {
 		}
 	}
 
+	@HttpCode(HttpStatus.OK)
+	@UseGuards(AuthGuard)
+	@Post('enterGame')
+	async enterGame(@Request() req) {
+		const token = req.headers.authorization;
+		if (token) {
+			const jwt = token.replace('Bearer', '').trim();
+			const decoded = this.jwtService.decode(jwt) as { [key: string]: any };
+			await this.userService.add_inGameUser(decoded.id);
+		}
+	}
+
+	@HttpCode(HttpStatus.OK)
+	@UseGuards(AuthGuard)
+	@Post('leaveGame')
+	async leaveGame(@Request() req) {
+		const token = req.headers.authorization;
+		if (token) {
+			const jwt = token.replace('Bearer', '').trim();
+			const decoded = this.jwtService.decode(jwt) as { [key: string]: any };
+			await this.userService.remove_inGameUser(decoded.id);
+		}
+	}
+
+	@HttpCode(HttpStatus.OK)
+	@UseGuards(AuthGuard)
+	@Get('inGameUsers')
+	async getInGameUsersList(@Request() req, @Response() res) {
+		console.log(" -[ get InGameList  / UsrCtrl ]- ");
+		const inGameList: string[] = await this.userService.getInGameUsers();
+		res.json(inGameList);
+
+		// const token = req.headers.authorization;
+		// if (token) {
+		// 	const jwt = token.replace('Bearer', '').trim();
+		// 	const decoded = this.jwtService.decode(jwt) as { [key: string]: any };
+		// 	const inGameList: string[] = await this.userService.getInGameUsers();
+		// 	res.json(inGameList);
+		// }
+	}
+
+	/////////////////////////////////////////////////////////////////////////////////////////////
 
 	////////////////////  Block User System /////////////////////////////
 	@HttpCode(HttpStatus.OK)
