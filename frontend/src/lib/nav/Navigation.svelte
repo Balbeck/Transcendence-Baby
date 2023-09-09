@@ -33,13 +33,13 @@
 	}
 
 	function handleProfile() {
-		goto("Profile");
+		goto("/Profile");
 	}
 	function handleFriends() {
-		goto("Friends");
+		goto("/Friends");
 	}
 	function handleGame() {
-		goto("game");
+		goto("/game");
 	}
 </script>
 

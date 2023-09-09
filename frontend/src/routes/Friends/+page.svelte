@@ -33,6 +33,10 @@
 	let onlineUsers: string[] = [];
 	let friendsList: string[] = [];
 	let onlineFriendsList: string[] = [];
+
+	let inGameFriendsList: string[] = [];
+	let inGameUsersList: string[] = [];
+
 	let pendingList: string[] = [];
 	let sentRequestsList: string[] = [];
 	let usersIBlockedList: string[] = [];
