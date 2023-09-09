@@ -32,6 +32,9 @@
 	let pictureLink: string;
 	let rank: string;
 	let title: string;
+	let win: number;
+	let loose: number;
+
 	let newUserName: string = "";
 	$: newImg = "";
 	$: username = "";
@@ -66,6 +69,8 @@
 					username = user.userName;
 					rank = user.rank;
 					title = user.title;
+					win = user.wonGameNbr;
+					loose = user.lostGameNbr;
 
 					googleAuth.set(user.fa2);
 					console.log("2fa Value from user: [ ", user.fa2, " ]");
@@ -162,6 +167,7 @@
 			<p>Name : {username}</p>
 			<p>Rank : {rank}</p>
 			<p>Title : {title}</p>
+			<p>Total Won: {win} - {loose} :Lost</p>
 			<p>
 				Change username
 				<input

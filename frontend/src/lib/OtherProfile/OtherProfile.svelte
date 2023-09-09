@@ -9,6 +9,8 @@
 	let pictureLink: string;
 	let rank: string;
 	let title: string;
+	let win: number;
+	let loose: number;
 
 	let isFriend: boolean;
 	let isPending: boolean;
@@ -39,6 +41,8 @@
 					username = user.username;
 					rank = user.rank;
 					title = user.title;
+					win = user.win;
+					loose = user.loose;
 
 					isFriend = user.isMyFriend;
 					isPending = user.isInPending;
@@ -192,6 +196,7 @@
 	<div>
 		<p>Login : {login}</p>
 		<p>Name : {username}</p>
+		<p>Total Won: {win} - {loose} :Lost</p>
 		<p>Rank : {rank}</p>
 		<p>Title: {title}</p>
 	</div>

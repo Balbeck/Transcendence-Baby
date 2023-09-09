@@ -7,6 +7,7 @@ import * as qrcode from 'qrcode';
 
 @Injectable()
 export class UserService {
+	private inGameUsersSet = new Set<number>();
 	constructor(
 		@InjectRepository(UserEntity)
 		private userRepository: Repository<UserEntity>,
@@ -374,10 +375,10 @@ export class UserService {
 
 	async incrementRankAndTitle(id: number) {
 		let rank: number;
-		let title: string;
-		const user = await this.find_user_by_id(id);
+		let user = await this.find_user_by_id(id);
 		console.log(" -[ Game Ranking ]- user: [", user.userName, "] -> formerRank: (", user.rank, ") -> Title: { ", user.title, " }");
 		rank = user.rank;
+		user.wonGameNbr += 1;
 		if (rank < 100) {
 			rank += 1;
 			user.rank = rank;
@@ -389,103 +390,102 @@ export class UserService {
 			user.title = "God of War";
 		}
 		await this.userRepository.save(user);
-
 	}
 
-	///////////////////////////////////////////////////////////////////////////
-	//																		//
-	//																	   //
-	////////////////////////////////////////////////////////////////////////
-
-
-
-
-	// // Liste des friends(promise -> liste des userNames) avec un  status 'accepted'
-	// async get_Accepted_friend_UserNames(userId: number): Promise<string[]> {
-	// 	const user = await this.userRepository
-	// 		.createQueryBuilder('user')
-	// 		.leftJoinAndSelect('user.friendship_relation', 'friendship')
-	// 		.leftJoinAndSelect('friendship.friend', 'friend')
-	// 		.where('user.id = :userId', { userId })
-	// 		.andWhere('friendship.status = :status', { status: 'accepted' })
-	// 		.getOne();
-
-	// 	if (!user) { return []; }
-
-	// 	else {
-	// 		const acceptedFriendUserNames = user.friendship_relation
-	// 			.map((friendship) => friendship.friend.userName);
-	// 		return acceptedFriendUserNames;
-	// 	}
-	// }
-
-	// // Liste des friends(promise -> liste des userNames) avec un  status 'pending'
-	// async get_Pending_friend_UserNames(userId: number): Promise<string[]> {
-	// 	const user = await this.userRepository
-	// 		.createQueryBuilder('user')
-	// 		.leftJoinAndSelect('user.friendship_relation', 'friendship')
-	// 		.leftJoinAndSelect('friendship.friend', 'friend')
-	// 		.where('user.id = :userId', { userId })
-	// 		.andWhere('friendship.status = :status', { status: 'accepted' })
-	// 		.getOne();
-
-	// 	if (!user) { return []; }
-
-	// 	else {
-	// 		const acceptedFriendUserNames = user.friendship_relation
-	// 			.map((friendship) => friendship.friend.userName);
-	// 		return acceptedFriendUserNames;
-	// 	}
-	// }
-
-	// // Fct Generique pour accepted, pending et blocked
-	// async get_friendUserNames_by_status(userId: number, status: string): Promise<string[]> {
-	// 	const user = await this.userRepository
-	// 		.createQueryBuilder('user')
-	// 		.leftJoinAndSelect('user.friendship_relation', 'friendship')
-	// 		.leftJoinAndSelect('friendship.friend', 'friend')
-	// 		.where('user.id = :userId', { userId })
-	// 		.andWhere('friendship.status = :status', { status: status })
-	// 		.getOne();
-
-	// 	if (!user) { return []; }
-	// 	else {
-	// 		const friendUserNames = user.friendship_relation
-	// 			.map((friendship) => friendship.friend.userName);
-	// 		return friendUserNames;
-	// 	}
-	// }
-
-
-
-
-	///////////////////////////////////////////////////////////////////////////
-	//																		//
-	//																	   //
-	////////////////////////////////////////////////////////////////////////
-
-
-
-
-
-
-
-	async remove(id: number): Promise<UserEntity> {
-		const removedUser = await this.userRepository.findOne({ where: { id: id } })
-		if (!removedUser) { return null; }
-		await this.userRepository.remove(removedUser);
-		return removedUser;
+	async incrementLost(id: number) {
+		let user = await this.find_user_by_id(id);
+		user.lostGameNbr += 1;
+		await this.userRepository.save(user);
 	}
 
-
-	async update_User_RefreshToken(login: string, refreshToken: string) {
-		const user = await this.find_user_by_login(login);
-		//console.log('-[ Usr S ]- Ancien Token: ', user.refreshToken);
-
-		await this.userRepository.update({ login }, { refreshToken: refreshToken });
-		const updatedUser = await this.find_user_by_login(login);
-		//console.log('-[ Usr S ]- Refrsh Token: ', updatedUser.refreshToken);
-		return updatedUser;
+	async add_inGameUser(id: number) {
+		this.inGameUsersSet.add(id);
 	}
 
+	async remove_inGameUser(id: number) {
+		this.inGameUsersSet.delete(id);
+	}
+
+	async getInGameUsers() {
+		const inGameIdList: number[] = Array.from(this.inGameUsersSet);
+		// transform id en userName
+		let usernameInGameList: string[] = [];
+		for (const id of inGameIdList) {
+			const user = await this.find_user_by_id(id);
+			const username: string = user.userName;
+			usernameInGameList.push(username);
+		}
+		return usernameInGameList;
+	}
 }
+
+///////////////////////////////////////////////////////////////////////////
+//																		//
+//																	   //
+////////////////////////////////////////////////////////////////////////
+
+
+
+
+// // Liste des friends(promise -> liste des userNames) avec un  status 'accepted'
+// async get_Accepted_friend_UserNames(userId: number): Promise<string[]> {
+// 	const user = await this.userRepository
+// 		.createQueryBuilder('user')
+// 		.leftJoinAndSelect('user.friendship_relation', 'friendship')
+// 		.leftJoinAndSelect('friendship.friend', 'friend')
+// 		.where('user.id = :userId', { userId })
+// 		.andWhere('friendship.status = :status', { status: 'accepted' })
+// 		.getOne();
+
+// 	if (!user) { return []; }
+
+// 	else {
+// 		const acceptedFriendUserNames = user.friendship_relation
+// 			.map((friendship) => friendship.friend.userName);
+// 		return acceptedFriendUserNames;
+// 	}
+// }
+
+// // Liste des friends(promise -> liste des userNames) avec un  status 'pending'
+// async get_Pending_friend_UserNames(userId: number): Promise<string[]> {
+// 	const user = await this.userRepository
+// 		.createQueryBuilder('user')
+// 		.leftJoinAndSelect('user.friendship_relation', 'friendship')
+// 		.leftJoinAndSelect('friendship.friend', 'friend')
+// 		.where('user.id = :userId', { userId })
+// 		.andWhere('friendship.status = :status', { status: 'accepted' })
+// 		.getOne();
+
+// 	if (!user) { return []; }
+
+// 	else {
+// 		const acceptedFriendUserNames = user.friendship_relation
+// 			.map((friendship) => friendship.friend.userName);
+// 		return acceptedFriendUserNames;
+// 	}
+// }
+
+// // Fct Generique pour accepted, pending et blocked
+// async get_friendUserNames_by_status(userId: number, status: string): Promise<string[]> {
+// 	const user = await this.userRepository
+// 		.createQueryBuilder('user')
+// 		.leftJoinAndSelect('user.friendship_relation', 'friendship')
+// 		.leftJoinAndSelect('friendship.friend', 'friend')
+// 		.where('user.id = :userId', { userId })
+// 		.andWhere('friendship.status = :status', { status: status })
+// 		.getOne();
+
+// 	if (!user) { return []; }
+// 	else {
+// 		const friendUserNames = user.friendship_relation
+// 			.map((friendship) => friendship.friend.userName);
+// 		return friendUserNames;
+// 	}
+// }
+
+
+
+///////////////////////////////////////////////////////////////////////////
+//																		//
+//																	   //
+////////////////////////////////////////////////////////////////////////

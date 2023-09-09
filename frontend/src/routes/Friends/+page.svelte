@@ -31,8 +31,9 @@
 
 	//let users: string[];
 	let onlineUsers: string[] = [];
-	let pendingList: string[] = [];
 	let friendsList: string[] = [];
+	let onlineFriendsList: string[] = [];
+	let pendingList: string[] = [];
 	let sentRequestsList: string[] = [];
 	let usersIBlockedList: string[] = [];
 	let usersWhoBlockedMeList: string[] = [];
@@ -40,8 +41,9 @@
 	let userToDisplay: string;
 
 	let onlineUserEmptyArray: boolean = false;
-	let pendingListEmptyArray: boolean = false;
 	let friendsListEmptyArray: boolean = false;
+	let onlineFriendsEmptyArray: boolean = false;
+	let pendingListEmptyArray: boolean = false;
 	let sentRequestListEmptyArray: boolean = false;
 	let usersIBlockedEmptyArray: boolean = false;
 	let usersWhoBlockedMeEmptyArray: boolean = false;
@@ -166,6 +168,13 @@
 				}
 				console.log("usersWhoBlockedMeList: ", usersWhoBlockedMeList);
 			}
+
+			onlineFriendsList = friendsList.filter((friend) =>
+				onlineUsers.includes(friend)
+			);
+			if (onlineFriendsList.length === 0) {
+				onlineFriendsEmptyArray = true;
+			}
 		} catch (e) {
 			console.log("Friend OnMount PB");
 		}
@@ -269,6 +278,25 @@
 					<p>Sorry Bro no one is connected !</p>
 				{:else}
 					{#each onlineUsers as user}
+						<div class="user-card">
+							<p>{user}</p>
+							<button
+								on:click={() => {
+									handleSeeProfil(user);
+								}}>See Profile</button
+							>
+						</div>
+					{/each}
+				{/if}
+
+				<h2>Online Friends</h2>
+				{#if onlineFriendsEmptyArray === true}
+					<p>
+						Sorry Bro your friends are not connected. Request new
+						Friends !
+					</p>
+				{:else}
+					{#each onlineFriendsList as user}
 						<div class="user-card">
 							<p>{user}</p>
 							<button

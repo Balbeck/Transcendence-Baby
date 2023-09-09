@@ -53,6 +53,8 @@ export class UserController {
 					avatar: userProfile.avatar,
 					rank: userProfile.rank,
 					title: userProfile.title,
+					win: userProfile.wonGameNbr,
+					loose: userProfile.lostGameNbr,
 
 					isMyFriend: requesterProfile.friends.includes(userProfile.login),
 					isInPending: requesterProfile.pendindFriendRequests.includes(userProfile.login),
@@ -201,6 +203,18 @@ export class UserController {
 			const jwt = token.replace('Bearer', '').trim();
 			const decoded = this.jwtService.decode(jwt) as { [key: string]: any };
 			await this.userService.incrementRankAndTitle(decoded.id);
+		}
+	}
+
+	@HttpCode(HttpStatus.OK)
+	@UseGuards(AuthGuard)
+	@Post('incrementLooser')
+	async incrementLooser(@Request() req) {
+		const token = req.headers.authorization;
+		if (token) {
+			const jwt = token.replace('Bearer', '').trim();
+			const decoded = this.jwtService.decode(jwt) as { [key: string]: any };
+			await this.userService.incrementLost(decoded.id);
 		}
 	}
 
