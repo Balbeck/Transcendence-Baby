@@ -65,6 +65,10 @@ export class UserEntity {
   rank: number;
   @Column({ nullable: false, default: "Newbee" })
   title: string;
+  @Column({ nullable: false, default: 0 })
+  wonGameNbr: number;
+  @Column({ nullable: false, default: 0 })
+  lostGameNbr: number;
 
 
   @BeforeInsert()
