@@ -16,17 +16,16 @@ export class UserController {
 	@Get('profile')
 	async profile(@Request() req, @Response() res) {
 		try {
-			console.log(" -[ Profile UserCtrl ]- ");
+			// console.log(" -[ Profile UserCtrl ]- ");
 			const headers = req.headers;
 			const Token = req.headers.authorization;
 			const [, jwtToken] = Token.split(' '); // Divise la chaîne en fonction de l'espace et ignore la première partie (Bearer)
-			//console.log(" -[ Profile UserCtrl ]- jwtToken: ", jwtToken);
+			// console.log(" -[ Profile UserCtrl ]- jwtToken: ", jwtToken);
 			const jwt = this.jwtService.decode(jwtToken) as { [key: string]: any };
-			//console.log(" -[ Profile UserCtrl ]- decode jwt: ", jwt);
-			console.log(" -[ Profile UserCtrl ]- jwt id: ", jwt.id);
+			// console.log(" -[ Profile UserCtrl ]- decode jwt: ", jwt);
+			// console.log(" -[ Profile UserCtrl ]- jwt id: ", jwt.id);
 			const user = await this.userService.find_user_by_id(jwt.id);
-			console.log(" -[ Profile UserCtrl ]- User: ", user);
-
+			// console.log(" -[ Profile UserCtrl ]- User: ", user);
 			res.json(user);
 		}
 		catch (e) {
@@ -62,7 +61,7 @@ export class UserController {
 					isInBlockList: requesterProfile.blockedUser.includes(userProfile.login),
 					isInBlockedByList: requesterProfile.blockedBy.includes(userProfile.login)
 				}
-				console.log(" -[ ProfileOther ]-  User-json(): ", user);
+				// console.log(" -[ ProfileOther ]-  User-json(): ", user);
 				res.json(user);
 			}
 			catch (e) {
@@ -76,7 +75,7 @@ export class UserController {
 	@UseGuards(AuthGuard)
 	@Post('sendFriendRequest')
 	async sendFriendRequest(@Request() req) {
-		console.log(" -[ requestFriends  / UsrCtrl ]- ");
+		// console.log(" -[ requestFriends  / UsrCtrl ]- ");
 		const token = req.headers.authorization;
 		if (token) {
 			const jwt = token.replace('Bearer', '').trim();
@@ -94,7 +93,7 @@ export class UserController {
 	@UseGuards(AuthGuard)
 	@Post('refuseFriendRequest')
 	async refuseFriendRequest(@Request() req) {
-		console.log(" -[ refuse Friends  / UsrCtrl ]- ");
+		// console.log(" -[ refuse Friends  / UsrCtrl ]- ");
 		const token = req.headers.authorization;
 		if (token) {
 			const jwt = token.replace('Bearer', '').trim();
@@ -112,7 +111,7 @@ export class UserController {
 	@UseGuards(AuthGuard)
 	@Post('addFriend')
 	async addNewFriendship(@Request() req) {
-		console.log(" -[ addFriends  / UsrCtrl ]- ");
+		// console.log(" -[ addFriends  / UsrCtrl ]- ");
 		const token = req.headers.authorization;
 		if (token) {
 			const jwt = token.replace('Bearer', '').trim();
@@ -137,7 +136,7 @@ export class UserController {
 	@UseGuards(AuthGuard)
 	@Post('removeFriend')
 	async removeFriendship(@Request() req) {
-		console.log(" -[ RemoveFriends  / UsrCtrl ]- ");
+		// console.log(" -[ RemoveFriends  / UsrCtrl ]- ");
 		const token = req.headers.authorization;
 		if (token) {
 			const jwt = token.replace('Bearer', '').trim();
@@ -155,7 +154,7 @@ export class UserController {
 	@UseGuards(AuthGuard)
 	@Get('pendingList')
 	async getPendingList(@Request() req, @Response() res) {
-		console.log(" -[ PendingList  / UsrCtrl ]- ");
+		// console.log(" -[ PendingList  / UsrCtrl ]- ");
 		const token = req.headers.authorization;
 		if (token) {
 			const jwt = token.replace('Bearer', '').trim();
@@ -170,7 +169,7 @@ export class UserController {
 	@UseGuards(AuthGuard)
 	@Get('friendsList')
 	async getfriendList(@Request() req, @Response() res) {
-		console.log(" -[ FriendList  / UsrCtrl ]- ");
+		// console.log(" -[ FriendList  / UsrCtrl ]- ");
 		const token = req.headers.authorization;
 		if (token) {
 			const jwt = token.replace('Bearer', '').trim();
@@ -184,7 +183,7 @@ export class UserController {
 	@UseGuards(AuthGuard)
 	@Get('sentRequestsList')
 	async getRequestsList(@Request() req, @Response() res) {
-		console.log(" -[ RequestsList  / UsrCtrl ]- ");
+		// console.log(" -[ sentRequestsList  / UsrCtrl ]- ");
 		const token = req.headers.authorization;
 		if (token) {
 			const jwt = token.replace('Bearer', '').trim();
@@ -248,7 +247,7 @@ export class UserController {
 	@UseGuards(AuthGuard)
 	@Get('inGameUsers')
 	async getInGameUsersList(@Request() req, @Response() res) {
-		console.log(" -[ get InGameList  / UsrCtrl ]- ");
+		// console.log(" -[ get InGameList  / UsrCtrl ]- ");
 		const inGameList: string[] = await this.userService.getInGameUsers();
 		res.json(inGameList);
 	}
@@ -278,7 +277,7 @@ export class UserController {
 	@UseGuards(AuthGuard)
 	@Post('blockUser')
 	async blockAUser(@Request() req) {
-		console.log(" -[ BlockUser  / UsrCtrl ]- ");
+		// console.log(" -[ BlockUser  / UsrCtrl ]- ");
 		const token = req.headers.authorization;
 		if (token) {
 			const jwt = token.replace('Bearer', '').trim();
@@ -293,7 +292,7 @@ export class UserController {
 	@UseGuards(AuthGuard)
 	@Post('unblockUser')
 	async unblockUser(@Request() req) {
-		console.log(" -[ UnblockUser  / UsrCtrl ]- ");
+		// console.log(" -[ UnblockUser  / UsrCtrl ]- ");
 		const token = req.headers.authorization;
 		if (token) {
 			const jwt = token.replace('Bearer', '').trim();
@@ -308,7 +307,7 @@ export class UserController {
 	@UseGuards(AuthGuard)
 	@Get('blockUserList')
 	async getBlockUserList(@Request() req, @Response() res) {
-		console.log(" -[ getBlockUser  / UsrCtrl ]- ");
+		// console.log(" -[ getBlockUser  / UsrCtrl ]- ");
 		const token = req.headers.authorization;
 		if (token) {
 			const jwt = token.replace('Bearer', '').trim();
@@ -322,7 +321,7 @@ export class UserController {
 	@UseGuards(AuthGuard)
 	@Get('blockedByList')
 	async getBlockedByUserList(@Request() req, @Response() res) {
-		console.log(" -[ getBlockedBy  / UsrCtrl ]- ");
+		// console.log(" -[ getBlockedBy  / UsrCtrl ]- ");
 		const token = req.headers.authorization;
 		if (token) {
 			const jwt = token.replace('Bearer', '').trim();

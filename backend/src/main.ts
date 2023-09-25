@@ -12,7 +12,6 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const { httpAdapter } = app.get(HttpAdapterHost);
   app.use(express.json());
-  // app.use(bodyParser.json());
   app.enableCors({
     origin: 'http://localhost:5173',
     methods: 'GET,POST',
@@ -37,12 +36,4 @@ async function bootstrap() {
 }
 bootstrap();
 
-
-
-
-
-
-// app.use(cors({
-//   origin: 'http://localhost:5173', // URL frontend
-//   credentials: true, // Pour entêtes d'autorisation ou cookies
-// }));
+// app.use(bodyParser.json());

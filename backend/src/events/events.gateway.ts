@@ -33,7 +33,7 @@ export class EventsGateway implements OnGatewayInit, OnGatewayConnection, OnGate
 	private userIdFindHelper: Map<string, any> = new Map(); // socket id -> id42
 
 	afterInit(server: Server) {
-		console.log('initialized')
+		console.log(' -[ EventsGateway ]- *initialized* afterInit( server io )')
 	}
 
 	handleConnection(client: Socket, ...args: any[]) {
@@ -44,19 +44,20 @@ export class EventsGateway implements OnGatewayInit, OnGatewayConnection, OnGate
 		}
 		this.socketsByUserID.set(client.handshake.query.id42, client);
 		this.userIdFindHelper.set(client.id, client.handshake.query.id42);
-		console.log('connected', client.id)
+		console.log(' -[ EventsGateway ]- *connected* :  ', client.id)
 	}
 
 	handleDisconnect(client: Socket) {
 		this.socketsByUserID.delete(this.userIdFindHelper.get(client.id));
 		this.userIdFindHelper.delete(client.id);
 
-		console.log('a clietn jsut disconnected', client.id)
+		console.log(' -[ EventsGateway ]- *a clietn jsut disconnected* : { ', client.id, ' }')
 	}
 
 	@SubscribeMessage('sendMessageN')
 	async sendMessageN(client: Socket, data: any) {
 		//console.log("------------data-------------", data)
+		console.log(' -[ EventsGateway ]- *sendMessageN* ... .. .')
 		let a = await this.userService.find_user_by_login(data.sendTo);
 		data.sendTo = a.id42;
 		let b = await this.directMessageService.sendMessage(data.sendBy, data.sendTo, data.message)
@@ -99,6 +100,7 @@ export class EventsGateway implements OnGatewayInit, OnGatewayConnection, OnGate
 
 	@SubscribeMessage('sendMessage')
 	async sendMessage(client: Socket, data: any) {
+		console.log(' -[ EventsGateway ]- *sendMessage*')
 		//console.log("------------data-------------", data)
 		let a = await this.directMessageService.sendMessage(data.sendBy, data.sendTo, data.message)
 

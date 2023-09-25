@@ -26,7 +26,7 @@ export class AuthService {
   add_Online_User_inMap(jwt: string, user: UserEntity) {
     const decoded = this.jwtService.decode(jwt) as { [key: string]: any };
     console.log(" -[ add MAP ]-  Id: {", decoded.id, "}")
-    console.log(" -[ add MAP ]-  is user alreadyin Map: {", this.onlineUsersMap.has(decoded.id), "}")
+    // console.log(" -[ add MAP ]-  is user { ", decoded.id, " } alreadyin Map: {", this.onlineUsersMap.has(decoded.id), "}")
     if (!this.onlineUsersMap.has(decoded.id)) {
       this.onlineUsersMap.set(decoded.id, user);
     }
@@ -38,7 +38,7 @@ export class AuthService {
   }
 
   async get_Online_Usernames(id: number) {
-    console.log(" -[ GET Online ]- requette de user.id: {", id, "}")
+    // console.log(" -[ GET Online ]- requette de user.id: {", id, "}")
     let loginList: string[] = [];
     let usernameList: string[] = [];
     //console.log(" -[ GET Online ]- init mapInside: ", loginList)
@@ -47,7 +47,7 @@ export class AuthService {
     if (mapSize === 1) { return [] }
     else {
       this.onlineUsersMap.forEach((user) => {
-        console.log(" -[ GET Online ]- Map -> username: [", user.userName, "]  id: {", user.id, "}")
+        // console.log(" -[ GET Online ]- Map -> username: [", user.userName, "]  id: {", user.id, "}")
         if (user.id !== id) {
           loginList.push(user.login);
         }
@@ -62,7 +62,7 @@ export class AuthService {
 
   isUserOnline(login: string) {
     this.onlineUsersMap.forEach((user) => {
-      console.log(" -[ GET Online ]- Map -> username: [", user.userName, "]  id: {", user.id, "}")
+      // console.log(" -[ GET Online ]- Map -> username: [", user.userName, "]  id: {", user.id, "}")
       if (user.login === login) {
         return true;
       }
@@ -102,7 +102,7 @@ export class AuthService {
         const response = await lastValueFrom(response$)
 
         const accessToken = response.data.access_token;
-        console.log("Tentative recuperation { 'https://api.intra.42.fr/v2/me' }  ...");
+        // console.log("Tentative recuperation { 'https://api.intra.42.fr/v2/me' }  ...");
         const urlMe = 'https://api.intra.42.fr/v2/me';
         const headers = {
           Authorization: `Bearer ${accessToken}`,
@@ -126,7 +126,7 @@ export class AuthService {
             firstName: data.first_name,
             lastName: data.last_name,
           }
-          console.log("user Me: ", user);
+          // console.log("user Me: ", user);
           await this.userService.add_new_user(user);
         }
         else {
