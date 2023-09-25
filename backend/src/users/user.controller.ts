@@ -251,15 +251,25 @@ export class UserController {
 		console.log(" -[ get InGameList  / UsrCtrl ]- ");
 		const inGameList: string[] = await this.userService.getInGameUsers();
 		res.json(inGameList);
-
-		// const token = req.headers.authorization;
-		// if (token) {
-		// 	const jwt = token.replace('Bearer', '').trim();
-		// 	const decoded = this.jwtService.decode(jwt) as { [key: string]: any };
-		// 	const inGameList: string[] = await this.userService.getInGameUsers();
-		// 	res.json(inGameList);
-		// }
 	}
+
+	@HttpCode(HttpStatus.OK)
+	@UseGuards(AuthGuard)
+	@Get('getMatchHistory')
+	async getMatchHistoryList(@Request() req, @Response() res) {
+		console.log(" -[ Match History List  / UsrCtrl ]- ");
+		const token = req.headers.authorization;
+		if (token) {
+			const jwt = token.replace('Bearer', '').trim();
+			const decoded = this.jwtService.decode(jwt) as { [key: string]: any };
+
+			const user = await this.userService.find_user_by_id(decoded.id);
+			const matchHistoryList = await this.userService.getMatchHistory(user);
+			console.log(" -[ Match History List  / UsrCtrl ]- Match History: ", matchHistoryList);
+			res.json(matchHistoryList);
+		}
+	}
+
 
 	/////////////////////////////////////////////////////////////////////////////////////////////
 

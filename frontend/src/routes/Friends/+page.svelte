@@ -30,6 +30,9 @@
 	// ajouter bouton 'accept'
 
 	//let users: string[];
+	//let id42: number;
+	//id42 = $user.id42;
+
 	let onlineUsers: string[] = [];
 	let friendsList: string[] = [];
 	let onlineFriendsList: string[] = [];
@@ -55,6 +58,13 @@
 	let sentRequestListEmptyArray: boolean = false;
 	let usersIBlockedEmptyArray: boolean = false;
 	let usersWhoBlockedMeEmptyArray: boolean = false;
+
+	let chatMessage: string = " ";
+
+	async function handleDM(username: string) {
+		//console.log("+page.Friends - username: ", username);
+		goto("/DM");
+	}
 
 	onMount(async () => {
 		try {
@@ -321,6 +331,18 @@
 									handleSeeProfil(user);
 								}}>See Profile</button
 							>
+							<!-- <button
+								on:click={() => {
+									$session.emit("sendMessageN", {
+										message: chatMessage,
+										sendBy: id42,
+
+										sendTo: user,
+									});
+									chatMessage = "";
+									handleDM(user);
+								}}>Send Direct message</button
+							> -->
 						</div>
 					{/each}
 				{/if}

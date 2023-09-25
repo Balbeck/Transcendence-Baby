@@ -75,6 +75,7 @@ export class AuthController {
 
     // /////////////////////////////////   [ User Modifications ]      //////////////////////////////////
     @HttpCode(HttpStatus.OK)
+    @UseGuards(AuthGuard) //
     @Get('verify_2fa')
     async verify_2fa(@Request() req, @Response() res) {
         console.log("-[ verify_2fa ]-");
@@ -83,6 +84,7 @@ export class AuthController {
     }
 
     @HttpCode(HttpStatus.OK)
+    @UseGuards(AuthGuard) //
     @Get('get_google_2fa')
     async get_google_2fa(@Request() req, @Response() res) {
         const url = new URL(req.url, 'http://localhost:5173');
@@ -105,6 +107,7 @@ export class AuthController {
     }
 
     @HttpCode(HttpStatus.OK)
+    @UseGuards(AuthGuard) //
     @Get('enable_2fa')
     async preview2fa(@Request() req, @Response() res) {
         let login: string;
@@ -128,6 +131,7 @@ export class AuthController {
     }
 
     @HttpCode(HttpStatus.OK)
+    @UseGuards(AuthGuard) //
     @Post('enable_2fa')
     async enable_2fa(@Request() req, @Response() res) {
         console.log("-[ 2fa ]- Enable ");
@@ -140,6 +144,7 @@ export class AuthController {
 
 
     @HttpCode(HttpStatus.OK)
+    @UseGuards(AuthGuard) //
     @Post('disable_2fa')
     async disable_2fa(@Request() req) {
         console.log("-[ 2fa ]- Disable ");
@@ -150,6 +155,7 @@ export class AuthController {
 
     //@UseGuards(AuthGuard) // BUGGG Compilation ou Import Module a FIX
     @HttpCode(HttpStatus.OK)
+    @UseGuards(AuthGuard) //
     @Post('changeName')
     async changeUserName(@Request() req, @Response() res) {
         console.log(" -[ ChangeName Controller ]- ");
@@ -180,6 +186,7 @@ export class AuthController {
     }
 
     @HttpCode(HttpStatus.OK)
+    @UseGuards(AuthGuard) //
     @Post('changeImage')
     async changeImage(@Request() req, @Response() res) {
         const img: string = req.body.data.img;
@@ -199,6 +206,7 @@ export class AuthController {
     }
 
     @HttpCode(HttpStatus.OK)
+    @UseGuards(AuthGuard)
     @Post('logout')
     async logout(@Request() req, @Response() res) {
         // const login = req.body.data.login;
@@ -222,6 +230,7 @@ export class AuthController {
     // /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @HttpCode(HttpStatus.OK)
+    @UseGuards(AuthGuard)
     @Get('onlineUsers')
     async getOnlineUsers(@Request() req, @Response() res) {
         console.log(" -[ Online Users (Auth-Ctrl) ]- ");
@@ -235,37 +244,35 @@ export class AuthController {
         console.log("OnlineUser list Sent: ", onlineUserlist);
         res.json(onlineUserlist);
     }
-
-
-
-
-
-
-    // // /////////////////////////////////   [ L o c a l   A u t h ]      //////////////////////////////////
-    // // // --> [  ** Register **  'Local' new user - Non 42 User -  ] <--
-
-    // // (@Req() request: Request) => Notation exacte used NestJsDocs
-    // @HttpCode(HttpStatus.OK)
-    // @Post('register')
-    // async register(@Body() bodyRequest, @Response() res) {
-    //     const jwt = await this.authService.registerNewUser(bodyRequest);
-    //     let frontendUrl = `http://localhost:5173`;
-    //     if (jwt !== null) {
-    //         const frontendUrl = `http://localhost:5173/?jwt=${jwt}`;
-    //     }
-    //     res.redirect(frontendUrl);
-    // }
-
-    // @HttpCode(HttpStatus.OK)
-    // @Post('login')
-    // async login(@Body() bodyRequest, @Response() res) {
-    //     let frontendUrl: string = `http://localhost:5173`;
-    //     const jwt = await this.authService.login(bodyRequest);
-    //     if (jwt !== null) {
-    //         frontendUrl = `http://localhost:5173/?jwt=${jwt}`;
-    //     }
-    //     res.redirect(frontendUrl);
-    // }
-    // // /////////////////////////////////////////////////////////////////////////////////////////////////////
-
 }
+
+
+
+
+
+// // /////////////////////////////////   [ L o c a l   A u t h ]      //////////////////////////////////
+// // // --> [  ** Register **  'Local' new user - Non 42 User -  ] <--
+
+// // (@Req() request: Request) => Notation exacte used NestJsDocs
+// @HttpCode(HttpStatus.OK)
+// @Post('register')
+// async register(@Body() bodyRequest, @Response() res) {
+//     const jwt = await this.authService.registerNewUser(bodyRequest);
+//     let frontendUrl = `http://localhost:5173`;
+//     if (jwt !== null) {
+//         const frontendUrl = `http://localhost:5173/?jwt=${jwt}`;
+//     }
+//     res.redirect(frontendUrl);
+// }
+
+// @HttpCode(HttpStatus.OK)
+// @Post('login')
+// async login(@Body() bodyRequest, @Response() res) {
+//     let frontendUrl: string = `http://localhost:5173`;
+//     const jwt = await this.authService.login(bodyRequest);
+//     if (jwt !== null) {
+//         frontendUrl = `http://localhost:5173/?jwt=${jwt}`;
+//     }
+//     res.redirect(frontendUrl);
+// }
+// // /////////////////////////////////////////////////////////////////////////////////////////////////////

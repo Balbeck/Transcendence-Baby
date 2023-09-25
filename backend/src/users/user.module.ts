@@ -12,7 +12,8 @@ import { JwtAuthService } from 'src/auth/jwt/jwt.service';
     TypeOrmModule.forFeature([UserEntity, GameEntity]),
 
   ],
-  providers: [UserService,
+  providers: [
+    UserService,
     JwtAuthService,
     AuthGuard,
   ],

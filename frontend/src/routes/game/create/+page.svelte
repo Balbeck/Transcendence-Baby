@@ -37,7 +37,7 @@
 			renderLoop();
 		})();
 
-		room.onLeave((code) => {
+		room?.onLeave((code) => {
 			if (code === 1000) {
 				// Normal closure, not a disconnection
 				return;

@@ -57,6 +57,7 @@
 	>
 	<!-- <button on:click={() => { goto("/"); openModal("findFriends"); }}>Find Friends</button> -->
 	<button on:click={handleFriends}>Friends</button>
+	<button on:click={() => goto("/DM")}>DM</button>
 	<button on:click={handleLoggout}>Logout</button>
 </nav>
 

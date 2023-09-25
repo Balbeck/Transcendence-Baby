@@ -11,3 +11,8 @@ export let userLogin = writable("");
 
 // Google Auth Profile Set
 export let googleAuth = writable(false);
+
+
+// DM
+export let session: any = writable(null);
+export let user: any = writable(null);

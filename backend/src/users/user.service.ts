@@ -35,6 +35,11 @@ export class UserService {
 		return user.id;
 	}
 
+	async find_user_ID_by_login(login: string): Promise<number> {
+		const user = await this.userRepository.findOne({ where: { login: login } });
+		return user.id;
+	}
+
 	async add_new_user(payload: any) {
 		let user = new UserEntity();
 		user.login = payload.login;
@@ -433,7 +438,48 @@ export class UserService {
 		await this.gameRepository.save(game);
 	}
 
+	// async getMatchHistory(user: UserEntity): Promise<GameEntity[]> {
+	// 	let games: GameEntity[]
+	// 	return games;
+	// }
 
+	// async getMatchHistory(user: UserEntity): Promise<GameEntity[]> {
+	// 	const matchHistory = await this.userRepository
+	// 		.createQueryBuilder('user')
+	// 		.leftJoinAndSelect('user.gamesAsPlayer1', 'game1')
+	// 		.leftJoinAndSelect('user.gamesAsPlayer2', 'game2')
+	// 		.where('user.id = :userId', { userId: user.id })
+	// 		.select(['game1', 'game2'])
+	// 		.getMany();
+
+	// 	// Concatenate the games from player1 and player2 into a single array
+	// 	const allGames: GameEntity[] = [];
+	// 	matchHistory.forEach((user) => {
+	// 		allGames.push(...user.gamesAsPlayer1, ...user.gamesAsPlayer2);
+	// 	});
+
+	// 	return allGames;
+	// }
+
+	async getMatchHistory(user: UserEntity): Promise<any[]> {
+		const games: GameEntity[] = await this.gameRepository
+			.createQueryBuilder('game')
+			.leftJoinAndSelect('game.player1', 'player1')
+			.leftJoinAndSelect('game.player2', 'player2')
+			.where('player1.id = :userId OR player2.id = :userId', { userId: user.id })
+			.getMany();
+
+		const matchHistory = games.map(game => {
+			return {
+				player1: game.player1.userName,
+				player2: game.player2.userName,
+				scorePlayer1: game.player1 === user ? game.player1Score : game.player2Score,
+				scorePlayer2: game.player1 === user ? game.player2Score : game.player1Score
+			};
+		});
+
+		return matchHistory;
+	}
 }
 ///////////////////////////////////////////////////////////////////////////
 //																		//

@@ -21,18 +21,17 @@
 	// faire Fct import de Game History Dans onMount
 	let games: any = [
 		{
-			player1: { userName: "Bob" },
-			player2: { userName: "John" },
+			player1: "Bob",
+			player2: "John",
 			player1Score: 3,
 			player2Score: 2,
 		},
 		{
-			player1: { userName: "Donald" },
-			player2: { userName: "Bob" },
+			player1: "Donald",
+			player2: "Bob",
 			player1Score: 3,
 			player2Score: 2,
 		},
-		// ... Ajoutez d'autres parties au besoin
 	];
 
 	onMount(async () => {
@@ -267,9 +266,12 @@
 	{#if games.length > 0}
 		{#each games as game, i}
 			<p>
-				{game.player1.userName}
+				{game.player1}
 				{game.player1Score} vs {game.player2Score}
-				{game.player2.userName}
+				{game.player2}
+				<!-- {game.player1.userName}
+				{game.player1Score} vs {game.player2Score}
+				{game.player2.userName} -->
 			</p>
 		{/each}
 	{:else}

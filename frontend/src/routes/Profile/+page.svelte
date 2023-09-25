@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Profilepage from "$lib/profile/Profilepage.svelte";
+	import Profilepage from "$lib/Profile/Profilepage.svelte";
 </script>
 
 <main>

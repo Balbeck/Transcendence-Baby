@@ -13,6 +13,7 @@ export class PongRoom extends Room<GameState> {
 	private rpId!: string; // <<<=== Right player ID
 
 	onCreate(options: any) {
+		console.log("-[]- onCreate");
 		console.info('PongRoom created', options);
 		this.setState(new GameState());
 		this.physics = new Physics(this.state.ball, this.state.leftPaddle, this.state.rightPaddle);
@@ -51,6 +52,7 @@ export class PongRoom extends Room<GameState> {
 	}
 
 	onJoin(client: Client, options: any) {
+		console.log("-[]- onJoin");
 		if (this.clients.length === 1) {
 			this.lpId = client.id;
 		} else if (this.clients.length === 2) {
@@ -61,6 +63,7 @@ export class PongRoom extends Room<GameState> {
 	}
 
 	onLeave(client: Client, consented: boolean) {
+		console.log("-[]- onLeave");
 		if (client.id === this.lpId) {
 			this.lpId = undefined;
 		} else if (client.id === this.rpId) {
@@ -75,6 +78,7 @@ export class PongRoom extends Room<GameState> {
 	}
 
 	onDispose() {
+		console.log("-[]- onDispose");
 		console.info('Disposing PongRoom');
 	}
 }
