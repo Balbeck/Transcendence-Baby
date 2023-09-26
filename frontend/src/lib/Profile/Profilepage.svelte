@@ -6,8 +6,7 @@
 	import Modal from "$lib/modals/Modal.svelte";
 	import { openModal, selectedPage } from "$lib/store/ModalValues";
 	import { closeModal } from "$lib/store/ModalValues";
-	// Est ce que Display une Modal  -[ boolean ]-
-	import { showModal } from "$lib/store/ModalValues";
+	import { showModal } from "$lib/store/ModalValues"; // Est ce que Display une Modal  -[ boolean ]-
 	let show_Modal: boolean;
 	showModal.subscribe((a: boolean) => {
 		show_Modal = a;
@@ -19,7 +18,7 @@
 	});
 	///////////////////////////////////////////////////
 
-	import { authentificated } from "$lib/store/store";
+	import { actualUsername, authentificated } from "$lib/store/store";
 	import { googleAuth } from "$lib/store/store";
 	let Google2fa: boolean = false;
 
@@ -104,6 +103,7 @@
 		if (response.ok) {
 			console.log("response.ok");
 			username = newUserName;
+			actualUsername.set(newUserName);
 			goto("/");
 		} else {
 			// show message erreur Modal

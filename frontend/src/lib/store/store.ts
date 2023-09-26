@@ -7,7 +7,11 @@ export let authentificated = writable(false);
 export let isGoogleAuthActivated = writable(false);
 export let isGoogleAuthEnabled = writable(false);
 export let qrGoogle = writable("");
+
+// User Infos (for game & auth)
 export let userLogin = writable("");
+export let actualUsername = writable("");
+export let userId = writable(0);
 
 // Google Auth Profile Set
 export let googleAuth = writable(false);

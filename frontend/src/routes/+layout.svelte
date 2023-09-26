@@ -1,7 +1,6 @@
 <script lang="ts">
 	import "../app.css";
 	import Navigation from "$lib/nav/Navigation.svelte";
-	import Login42 from "$lib/login/Login42.svelte";
 	// import { errorMsg, openModal, showModal } from "$lib/store/ModalValues";
 	// import checkJWT from "$lib/auth/auth.svelte";
 
@@ -18,15 +17,18 @@
 		isGoogleAuthActivated,
 		qrGoogle,
 		userLogin,
+		userId,
+		actualUsername,
 	} from "$lib/store/store";
+	import { authentificated } from "$lib/store/store";
 
 	let login: any;
 	$: qrCode = "";
 
 	// import -[ Value ]- Authentification : Condition Acces Espace User
-	import { authentificated } from "$lib/store/store";
 	import Modal from "$lib/modals/Modal.svelte";
 	import GoogleAuth from "$lib/auth/GoogleAuth.svelte";
+	import LoginFortyTwo from "$lib/Login/LoginFortyTwo.svelte";
 
 	let auth: boolean = false;
 	authentificated.subscribe((a) => {
@@ -70,6 +72,8 @@
 				const user = await response.json(); // Convertit la réponse JSON en objet JavaScript
 				$user = user;
 				userLogin.set(user.login);
+				userId.set(user.id);
+				actualUsername.set(user.userName);
 
 				console.log("2fa Value from user: [ ", user.fa2, " ]");
 				return user.id;
@@ -220,7 +224,7 @@
 					<GoogleAuth {login} QrCode={ImgQrCode} />
 				</Modal>
 			{:else}
-				<Login42 />
+				<LoginFortyTwo />
 			{/if}
 		</main>
 	{:else}
