@@ -106,6 +106,9 @@ export enum GameStatus {
 	INTERRUPTED, // a player has left the match
 }
 
+// *******   ******** //
+// C'est Dans Game STATE ou dans Le ScoarBorad quil faut provide les username et userid de lp et rp
+// *******   ******** //
 export class GameState extends Schema {
 	@type('int8')
 	public gameStatus = GameStatus.WAITING;

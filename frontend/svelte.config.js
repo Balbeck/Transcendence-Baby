@@ -10,6 +10,14 @@ const config = {
 export default config;
 
 
+
+
+
+
+
+
+
+
 // import adapter from '@sveltejs/adapter-auto';
 
 // const config = {

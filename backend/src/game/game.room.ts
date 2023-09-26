@@ -17,6 +17,12 @@ export class PongRoom extends Room<GameState> {
 		console.info('PongRoom created', options);
 		this.setState(new GameState());
 		this.physics = new Physics(this.state.ball, this.state.leftPaddle, this.state.rightPaddle);
+		// *******   ******** //
+		// changer :
+		// this.physics = new Physics(this.state.ball, this.state.leftPaddle, this.state.rightPaddle, + 4 autres datas);
+		// On doit creer la room quand connais le nom des 2 users car sinon on ne peut pas faire passer les full param option !
+		// Voir interface option dans game Physics + constructeur class Physics 
+		// *******   ******** //
 	}
 
 	private update(deltaTime: number) {

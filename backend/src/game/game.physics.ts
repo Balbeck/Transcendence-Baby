@@ -11,6 +11,13 @@ interface PhysicsOptions {
 	ballSpeed: number;
 	paddleSpeed: number;
 	ballAngle: number;
+
+	// *******   ******** //
+	// lpUsername: string;
+	// lpUserId: number;
+	// rpUsername: string;
+	// rpUserId: number;
+	// *******   ******** //
 }
 
 export class Physics {
@@ -36,12 +43,18 @@ export class Physics {
 		leftPaddle: Paddle,
 		rightPaddle: Paddle,
 		options?: PhysicsOptions,
+		// *******   ******** //
+		// options: PhysicsOptions,
+		// *******   ******** //
+
 	) {
 		const {
 			ballSpeed = 1,
 			ballAngle = 0,
 			paddleSpeed = 0.5,
+			// *******   ******** //
 		} = options || {};
+		// *******   ******** //
 
 		this.ball = ball;
 		this.lp = leftPaddle;
