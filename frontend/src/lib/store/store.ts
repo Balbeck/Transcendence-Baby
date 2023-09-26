@@ -12,6 +12,7 @@ export let qrGoogle = writable("");
 export let userLogin = writable("");
 export let actualUsername = writable("");
 export let userId = writable(0);
+export let clientColyseus = writable();
 
 // Google Auth Profile Set
 export let googleAuth = writable(false);

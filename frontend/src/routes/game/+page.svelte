@@ -27,8 +27,15 @@
 		isModalOpen = false;
 	};
 
+	// **************      ************** //
+	import { clientColyseus } from "$lib/store/store";
+	// **************      ************** //
+
 	onMount(() => {
 		client = new Colyseus.Client("ws://localhost:3000");
+		// **************      ************** //
+		clientColyseus.set(client);
+		// **************      ************** //
 
 		return () => {
 			if (room) room.leave();

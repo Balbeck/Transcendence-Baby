@@ -8,6 +8,11 @@
 	} from "../../../../../backend/src/game/game.schema";
 	import { render } from "$lib/game/gameRender";
 
+	// **************      ************** //
+	import { clientColyseus } from "$lib/store/store";
+	let client: any;
+	// **************      ************** //
+
 	let state: GameState;
 	let room: Room<GameState>;
 	let canvas: HTMLCanvasElement;
@@ -16,6 +21,12 @@
 	let isGamePaused = false;
 
 	onMount(() => {
+		// **************      ************** //
+		clientColyseus.subscribe((dataClient) => {
+			client = dataClient;
+		});
+		// **************      ************** //
+
 		const context = canvas.getContext("2d");
 		if (!context) {
 			throw new Error("Failed to get 2D context.");
@@ -59,7 +70,7 @@
 	});
 
 	async function initializeGame() {
-		const client = new Client("ws://localhost:3000");
+		// const client = new Client("ws://localhost:3000");
 		try {
 			room = await client.joinOrCreate("pong");
 			state = room.state;
